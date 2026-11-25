@@ -900,7 +900,7 @@ async function calculate(){
 
     const {data,error}=await db.rpc(
       'flow_preventivo',{
-        p_alloggio:id,
+        p_alloggio_id:id,
         p_check_in:checkin,
         p_check_out:checkout,
         p_ospiti:Number($('guests').value)
@@ -1032,7 +1032,7 @@ $('reserve').onclick=async()=>{
 
     const {data,error}=await db.rpc(
       'flow_prenota',{
-        p_alloggio:id,
+        p_alloggio_id:id,
         p_check_in:checkin,
         p_check_out:checkout,
         p_ospiti:Number($('guests').value)
