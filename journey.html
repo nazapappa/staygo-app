@@ -741,7 +741,27 @@ async function loadBookings(){
 
     if(error) throw error;
 
-    bookings=data || [];
+   bookings = await Promise.all(
+  (data || []).map(async booking => {
+    booking.coverUrl = null;
+
+    const path = booking.alloggi?.foto?.[0];
+
+    if (path) {
+      try {
+        const { data: signed } = await db.storage
+          .from('alloggi-foto')
+          .createSignedUrl(path, 3600);
+
+        booking.coverUrl = signed?.signedUrl || null;
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+
+    return booking;
+  })
+);
 
     $('workspace').hidden=false;
     $('loginRequired').hidden=true;
