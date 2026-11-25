@@ -125,7 +125,16 @@ function writeCache(key, result) {
   }
 }
   async function loadPhoto(queries, offset) {
+const cacheKey = season + "_" + offset;
+const cached = readCache(cacheKey);
 
+if (
+  cached?.photo?.descriptionurl &&
+  !usedPhotos.has(cached.photo.descriptionurl)
+) {
+  usedPhotos.add(cached.photo.descriptionurl);
+  return cached;
+}
     const destination =
       queries[(day + offset) % queries.length];
 
@@ -198,8 +207,11 @@ function writeCache(key, result) {
 
     usedPhotos.add(photo.descriptionurl);
 
-    return { photo, destination };
+const result = { photo, destination };
 
+writeCache(cacheKey, result);
+
+return result;
   }
 
   function createCredit(photo) {
