@@ -97,8 +97,10 @@
            .includes(license) &&
          licenseUrl.startsWith("https://creativecommons.org/") &&
          info.mime === "image/jpeg" &&
-         info.width >= 1600 &&
-         info.width > info.height &&
+         info.width >= 2400 &&
+info.height >= 1400 &&
+info.width / info.height >= 1.3 &&
+info.width / info.height <= 2.2 &&
          info.thumburl &&
          info.descriptionurl &&
          clean(meta.Artist?.value) &&
