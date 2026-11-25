@@ -734,7 +734,7 @@ async function loadBookings(){
         prezzo_totale,
         stato,
         scadenza_il,
-        alloggi(titolo,citta)
+        alloggi(titolo,citta,foto)
       `)
       .eq('viaggiatore_id',auth.user.id)
       .order('check_in',{ascending:false});
