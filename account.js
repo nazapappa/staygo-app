@@ -243,9 +243,23 @@ async function register() {
         email: $('regEmail').value.trim(),
         password: $('regPassword').value,
         options: {
-          emailRedirectTo:
-            location.origin + '/account.html'
-        }
+  emailRedirectTo:
+    location.origin + '/account.html',
+
+  data: {
+    staygo_registration: {
+      nome: data.nome,
+      cognome: data.cognome,
+      data_nascita: data.data_nascita,
+      paese_residenza: data.paese_residenza,
+      telefono: data.telefono,
+      termini: $('regTerms').checked,
+      privacy: $('regPrivacy').checked,
+      maggiorenne: $('regAdult').checked,
+      versione: 'bozza-1.0'
+    }
+  }
+}
       });
 
     if (error) throw error;
