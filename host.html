@@ -1,119 +1,547 @@
- 
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Diventa Host | STAYGO</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14151A">
+<title>Host Collection | STAYGO°</title>
 <link rel="stylesheet" href="style.css">
+
+<style>
+body{padding-bottom:110px}
+
+.host-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:24px 5%;
+  border:0;
+}
+
+.host-main{
+  width:90%;
+  max-width:1100px;
+  margin:auto;
+}
+
+.host-cover{
+  min-height:380px;
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  border-radius:30px;
+  display:flex;
+  align-items:flex-end;
+  background:#292831;
+}
+
+.host-cover img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:-2;
+}
+
+.host-cover:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    transparent,#14151Af5
+  );
+  z-index:-1;
+}
+
+.cover-text{
+  padding:30px;
+  max-width:700px;
+}
+
+.cover-text h1{
+  font-size:clamp(36px,6vw,65px);
+  font-weight:500;
+  letter-spacing:-2px;
+}
+
+.cover-text em{
+  color:var(--moon);
+  font-family:Georgia,serif;
+  font-weight:400;
+}
+
+.cover-text p{
+  color:#F4F1EACC;
+  font-size:14px;
+}
+
+.host-links{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:20px 0;
+}
+
+.host-links a{
+  flex:1;
+  text-align:center;
+}
+
+.host-panel{
+  padding:28px;
+  border-radius:28px;
+  background:var(--surface);
+  border:1px solid var(--border);
+}
+
+.host-panel h2{
+  font-size:30px;
+  margin:15px 0;
+}
+
+.form-section{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  padding:20px 0 10px;
+  border-bottom:1px solid var(--border);
+}
+
+.step-number{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#E6D9FF12;
+  color:var(--moon);
+  font-size:12px;
+}
+
+.form-section strong{
+  font-weight:500;
+  font-size:18px;
+}
+
+.upload-area{
+  border:1px dashed #E6D9FF60;
+  border-radius:22px;
+  padding:22px;
+  background:#E6D9FF05;
+}
+
+.upload-area input{
+  background:transparent;
+  border:0;
+  padding:12px 0;
+}
+
+.upload-area input::file-selector-button{
+  background:var(--moon);
+  color:var(--dark);
+  border:0;
+  border-radius:30px;
+  padding:10px 15px;
+  margin-right:8px;
+  cursor:pointer;
+}
+
+#photoPreview{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:15px;
+}
+
+#photoPreview img{
+  width:100%;
+  aspect-ratio:1;
+  object-fit:cover;
+  border-radius:12px;
+}
+
+#photoCount{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.review-info{
+  grid-column:1/-1;
+  padding:20px;
+  border-radius:20px;
+  background:#E6D9FF08;
+  border:1px solid #E6D9FF20;
+}
+
+.review-info p{
+  font-size:13px;
+  margin-bottom:0;
+}
+
+#hostMessage{
+  overflow-wrap:anywhere;
+  font-size:14px;
+}
+
+.host-footer{
+  text-align:center;
+  padding:35px 0;
+}
+
+.host-footer p{
+  font-size:11px;
+}
+
+@media(max-width:760px){
+  .host-panel{padding:20px}
+  .cover-text{padding:23px}
+  .host-cover{min-height:360px}
+  .host-header .eyebrow{
+    letter-spacing:1px;
+  }
+}
+</style>
 </head>
+
 <body>
 
-<header>
-<div class="wrap bar">
-<a class="logo" href="index.html">STAY<span>GO</span></a>
-<nav>
-<a href="index.html">Home</a>
-<a href="alloggi.html">Cerca alloggi</a>
-<a href="ai.html">Organizza con AI</a>
-<a class="active" href="host.html">Diventa Host</a>
-<a href="annunci.html">I miei annunci</a>
-<a href="account.html">Accedi / Account</a>
-</nav>
-</div>
+<header class="host-header">
+  <a class="logo" href="index.html">
+    staygo<span>°</span>
+  </a>
+  <span class="eyebrow">HOST COLLECTION</span>
 </header>
 
-<section class="hero split">
-<div class="wrap">
-<div>
-<div class="eyebrow">STAYGO / HOST EXPERIENCE</div>
-<h1>Il tuo spazio. Nuove possibilità.</h1>
-<p>Tutti possono proporre un alloggio. Soltanto il team STAYGO può autorizzarne la pubblicazione ufficiale.</p>
-<div class="actions"></div>
-</div>
-<img src="foto-5.jpg" alt="Immagine illustrativa di un alloggio">
-</div>
-</section>
+<main class="host-main">
 
-<section class="section">
-<div class="wrap">
-<h2>Proponi il tuo alloggio</h2>
-<p>Accedi e invia la tua proposta al team STAYGO.</p>
+  <section class="host-cover">
 
-<div class="panel">
-<form id="hostForm" hidden class="form">
+    <img src="foto-5.jpg"
+      alt="Immagine illustrativa di un alloggio">
 
-<label>Nome alloggio
-<input name="title" required maxlength="100">
-</label>
+    <div class="cover-text">
 
-<label>Città
-<input name="city" required maxlength="70">
-</label>
+      <div class="eyebrow">
+        STAYGO / Host Experience
+      </div>
 
-<label>Tipologia
-<select name="type">
-<option>B&B</option>
-<option>Appartamento</option>
-<option>Casa vacanza</option>
-<option>Villa</option>
-<option>Hotel</option>
-</select>
-</label>
+      <h1>
+        Ogni luogo ha una storia.
+        <em>Raccontaci la tua.</em>
+      </h1>
 
-<label>Ospiti
-<input name="guests" type="number" min="1" max="30" value="2" required>
-</label>
+      <p>
+        Trasforma il tuo spazio nella prossima
+        esperienza di viaggio di qualcuno.
+      </p>
 
-<label>Prezzo indicativo a notte (€)
-<input name="price" type="number" min="1" required>
-</label>
+    </div>
 
-<label>CIN (se applicabile)
-<input name="cin" maxlength="50">
-</label>
+  </section>
 
-<label>Servizi (separati da virgola)
-<input name="services">
-</label>
+  <div class="host-links">
 
-<label class="wide">Descrizione
-<textarea name="description" required maxlength="1500"></textarea>
-</label>
+    <a class="outline" href="annunci.html">
+      I miei annunci ↗
+    </a>
 
-<label class="wide">
-Fotografie dell'alloggio (massimo 10)
-<input type="file" name="photos"
-id="hostPhotos"
-accept="image/jpeg,image/png,image/webp"
-multiple required>
-</label>
+    <a class="outline" href="account.html">
+      Il mio account
+    </a>
 
-<button class="cta wide" type="submit">
-Invia per approvazione
-</button>
+  </div>
 
-</form>
+  <section class="host-panel">
 
-<p class="notice">
-Le fotografie saranno sottoposte alla verifica del team STAYGO.
-Durante i test non inserire dati personali reali.
-</p>
+    <div class="eyebrow">
+      Your property. Your story.
+    </div>
 
-<p id="hostMessage" aria-live="polite"></p>
-</div>
-</div>
-</section>
+    <h2>Proponi il tuo alloggio.</h2>
 
-<footer class="footer">
-<div class="wrap">
-<b>STAYGO</b>
-<p>Prototipo dimostrativo · Nessuna disponibilità o prenotazione reale.</p>
-</div>
-</footer>
+    <p>
+      Accedi e presenta la tua proprietà.
+      Ogni annuncio sarà valutato dal team
+      STAYGO prima della pubblicazione.
+    </p>
+
+    <form id="hostForm" hidden class="form">
+
+      <div class="form-section">
+        <span class="step-number">01</span>
+        <strong>La tua proprietà</strong>
+      </div>
+
+      <label>
+        Nome alloggio
+        <input name="title"
+          placeholder="Es. Villa Luna"
+          required maxlength="100">
+      </label>
+
+      <label>
+        Città
+        <input name="city"
+          placeholder="Es. Cortina d'Ampezzo"
+          required maxlength="70">
+      </label>
+
+      <label class="wide">
+        Tipologia
+        <select name="type">
+          <option>B&B</option>
+          <option>Appartamento</option>
+          <option>Casa vacanza</option>
+          <option>Villa</option>
+          <option>Hotel</option>
+        </select>
+      </label>
+
+      <div class="form-section">
+        <span class="step-number">02</span>
+        <strong>L'esperienza di soggiorno</strong>
+      </div>
+
+      <label>
+        Numero di ospiti
+        <input name="guests"
+          type="number"
+          min="1" max="30"
+          value="2" required>
+      </label>
+
+      <label>
+        Prezzo indicativo a notte (€)
+        <input name="price"
+          type="number"
+          min="1"
+          placeholder="150"
+          required>
+      </label>
+
+      <label class="wide">
+        Servizi disponibili
+        <input name="services"
+          placeholder="Wi-Fi, piscina, parcheggio">
+        <small>Separa i servizi con una virgola.</small>
+      </label>
+
+      <label class="wide">
+        Racconta il tuo alloggio
+        <textarea name="description"
+          placeholder="Cosa rende speciale questo luogo?"
+          required maxlength="1500"></textarea>
+      </label>
+
+      <div class="form-section">
+        <span class="step-number">03</span>
+        <strong>Attraverso le immagini</strong>
+      </div>
+
+      <div class="upload-area wide">
+
+        <label>
+          Fotografie dell'alloggio
+
+          <input type="file"
+            name="photos"
+            id="hostPhotos"
+            accept="image/jpeg,image/png,image/webp"
+            multiple required>
+        </label>
+
+        <p class="notice">
+          Da 1 a 10 fotografie.
+          JPEG, PNG o WebP.
+          Massimo 5 MB per fotografia.
+        </p>
+
+        <div id="photoCount">
+          Nessuna fotografia selezionata
+        </div>
+
+        <div id="photoPreview"></div>
+
+      </div>
+
+      <div class="form-section">
+        <span class="step-number">04</span>
+        <strong>Informazioni e conformità</strong>
+      </div>
+
+      <label class="wide">
+        CIN (se applicabile)
+        <input name="cin"
+          maxlength="50"
+          placeholder="Codice Identificativo Nazionale">
+      </label>
+
+      <div class="form-section">
+        <span class="step-number">05</span>
+        <strong>Revisione STAYGO</strong>
+      </div>
+
+      <div class="review-info">
+
+        <strong>Una selezione curata.</strong>
+
+        <p>
+          La tua proposta sarà inviata
+          all'amministrazione. L'alloggio sarà
+          visibile pubblicamente soltanto
+          dopo l'approvazione.
+        </p>
+
+      </div>
+
+      <button class="cta wide" type="submit">
+        Invia per approvazione ↗
+      </button>
+
+    </form>
+
+    <p id="hostMessage" aria-live="polite"></p>
+
+    <p class="notice">
+      Durante i test non inserire dati personali reali.
+      Le fotografie saranno sottoposte a verifica.
+    </p>
+
+  </section>
+
+  <footer class="host-footer">
+
+    <div class="eyebrow">
+      STAYGO° — The Living Journey
+    </div>
+
+    <p>
+      Prototipo dimostrativo.
+      Nessuna prenotazione reale.
+    </p>
+
+  </footer>
+
+</main>
+
+<nav class="bottom-nav"
+  aria-label="Navigazione principale">
+
+  <a href="index.html">
+    <svg viewBox="0 0 24 24">
+      <path d="M3 10l9-7 9 7v11H3z"/>
+      <path d="M9 21v-8h6v8"/>
+    </svg>
+    Home
+  </a>
+
+  <a href="alloggi.html">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M16 8l-3 5-5 3 3-5z"/>
+    </svg>
+    Esplora
+  </a>
+
+  <a href="ai.html">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>
+    </svg>
+    STAY AI
+  </a>
+
+  <a class="active"
+    href="host.html"
+    aria-current="page">
+    <svg viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="5"/>
+      <path d="M12 7v10M7 12h10"/>
+    </svg>
+    Host
+  </a>
+
+  <a href="account.html">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21v-2a8 8 0 0116 0v2"/>
+    </svg>
+    Profilo
+  </a>
+
+</nav>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
+
+<script>
+const photoInput =
+  document.getElementById('hostPhotos');
+
+const photoPreview =
+  document.getElementById('photoPreview');
+
+const photoCount =
+  document.getElementById('photoCount');
+
+let previewUrls = [];
+
+function clearPreview(){
+  previewUrls.forEach(url=>URL.revokeObjectURL(url));
+  previewUrls=[];
+  photoPreview.replaceChildren();
+}
+
+photoInput.addEventListener('change',()=>{
+
+  clearPreview();
+
+  const files=Array.from(photoInput.files);
+
+  if(files.length>10){
+    photoInput.value='';
+    photoCount.textContent=
+      'Puoi selezionare massimo 10 fotografie.';
+    return;
+  }
+
+  const validTypes=[
+    'image/jpeg','image/png','image/webp'
+  ];
+
+  if(files.some(file=>
+    file.size>5*1024*1024 ||
+    !validTypes.includes(file.type)
+  )){
+    photoInput.value='';
+    photoCount.textContent=
+      'Controlla formato e dimensione delle fotografie.';
+    return;
+  }
+
+  photoCount.textContent=
+    files.length+' / 10 fotografie selezionate';
+
+  files.forEach((file,index)=>{
+    const image=document.createElement('img');
+    const url=URL.createObjectURL(file);
+    previewUrls.push(url);
+    image.src=url;
+    image.alt='Anteprima fotografia '+(index+1);
+    photoPreview.appendChild(image);
+  });
+
+});
+
+document.getElementById('hostForm')
+.addEventListener('reset',()=>{
+  clearPreview();
+  photoCount.textContent=
+    'Nessuna fotografia selezionata';
+});
+</script>
 
 </body>
 </html>
