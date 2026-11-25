@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14151A">
-<title>Flow Calendar 2.0 | STAYGO°</title>
+<title>Flow Calendar 3.0 | STAYGO°</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -51,6 +51,35 @@ body{
   min-width:0;
   font-size:16px;
 }
+.smart-mode{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px;
+  padding:5px;
+  border-radius:18px;
+  background:#14151A;
+  margin-bottom:18px;
+}
+.mode-button{
+  border:0;
+  background:transparent;
+  color:#A6A8B2;
+  border-radius:14px;
+  padding:13px 5px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+.mode-button.active{
+  background:#E6D9FF;
+  color:#14151A;
+}
+.smart-hint{
+  font-size:12px;
+  color:#E6D9FF;
+  line-height:1.7;
+  margin:15px 0;
+}
 .month-bar{
   display:flex;
   align-items:center;
@@ -64,6 +93,7 @@ body{
   border:0;
   border-radius:14px;
   padding:12px 18px;
+  cursor:pointer;
 }
 .calendar-grid{
   display:grid;
@@ -100,6 +130,11 @@ body{
 .day.booked{background:#54303C}
 .day.pending{background:#55452D}
 .day.selected{
+  background:#51465F;
+  color:#F4F1EA;
+  border-color:#E6D9FF50;
+}
+.day.endpoint{
   background:#E6D9FF;
   color:#14151A;
 }
@@ -155,26 +190,43 @@ body{
 }
 .selection-box strong{
   color:#E6D9FF;
-  font-size:20px;
+  font-size:22px;
 }
 .selection-box p{
   font-size:12px;
   line-height:1.8;
   overflow-wrap:anywhere;
 }
-.range-box{
-  border-top:1px solid #ffffff15;
-  margin-top:22px;
-  padding-top:18px;
+.range-summary{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:15px;
 }
-.range-box h3{
-  font-size:17px;
+.range-date{
+  background:#14151A;
+  border-radius:14px;
+  padding:13px;
+}
+.range-date small{
+  display:block;
+  color:#A6A8B2;
+  font-size:10px;
+  letter-spacing:1px;
+  margin-bottom:8px;
+}
+.range-date span{
+  font-size:13px;
 }
 .flow-footer{
   text-align:center;
   padding:30px;
   font-size:11px;
   color:#A6A8B2;
+}
+button:disabled{
+  cursor:not-allowed;
+  opacity:.45;
 }
 @media(min-width:800px){
   .day{min-height:95px}
@@ -195,13 +247,13 @@ body{
   <a class="logo" href="index.html">
     staygo<span>°</span>
   </a>
-  <span class="eyebrow">FLOW CALENDAR 2.0</span>
+  <span class="eyebrow">FLOW 3.0</span>
 </header>
 
 <main class="flow-main">
 
   <div class="eyebrow">
-    HOST WORKSPACE / AVAILABILITY
+    HOST WORKSPACE / SMART SELECTION
   </div>
 
   <h1>
@@ -237,6 +289,32 @@ body{
     </section>
 
     <section class="flow-panel">
+
+      <div class="eyebrow">
+        STAYGO° SMART SELECTION
+      </div>
+
+      <h2>Organizza il tuo tempo.</h2>
+
+      <div class="smart-mode">
+
+        <button type="button"
+          class="mode-button active"
+          id="rangeMode">
+          Intero periodo
+        </button>
+
+        <button type="button"
+          class="mode-button"
+          id="singleMode">
+          Singoli giorni
+        </button>
+
+      </div>
+
+      <p class="smart-hint" id="smartHint">
+        Seleziona il primo giorno del periodo.
+      </p>
 
       <div class="month-bar">
 
@@ -295,14 +373,26 @@ body{
           0 giorni selezionati
         </strong>
 
+        <div class="range-summary">
+
+          <div class="range-date">
+            <small>PRIMA DATA</small>
+            <span id="firstDate">—</span>
+          </div>
+
+          <div class="range-date">
+            <small>ULTIMA DATA</small>
+            <span id="lastDate">—</span>
+          </div>
+
+        </div>
+
         <p id="selectionDetails">
-          Tocca le date da modificare.
+          Seleziona le date da modificare.
         </p>
 
-        <p>
-          Le date rimangono selezionate
-          anche quando cambi mese.
-        </p>
+        <p id="selectionNotice"
+          role="status"></p>
 
       </div>
 
@@ -317,35 +407,6 @@ body{
           type="button" id="clearSelection">
           Deseleziona
         </button>
-
-      </div>
-
-      <div class="range-box">
-
-        <h3>Seleziona un periodo</h3>
-
-        <div class="editor-grid">
-
-          <label>
-            Dal giorno
-            <input type="date" id="rangeStart">
-          </label>
-
-          <label>
-            Al giorno incluso
-            <input type="date" id="rangeEnd">
-          </label>
-
-        </div>
-
-        <div class="flow-actions">
-
-          <button class="outline"
-            type="button" id="selectRange">
-            Seleziona periodo
-          </button>
-
-        </div>
 
       </div>
 
@@ -479,6 +540,10 @@ const selected=new Set();
 let currentMonth=new Date();
 currentMonth.setDate(1);
 
+let mode="range";
+let rangeStart=null;
+let rangeEnd=null;
+
 let ready=false;
 let saving=false;
 let loadVersion=0;
@@ -503,6 +568,8 @@ function addDays(key,n){
 
 function prettyDate(key){
 
+  if(!key)return "—";
+
   return new Date(key+"T12:00:00")
     .toLocaleDateString("it-IT",{
       day:"numeric",
@@ -511,9 +578,6 @@ function prettyDate(key){
     });
 
 }
-
-$("rangeStart").min=dateKey(new Date());
-$("rangeEnd").min=dateKey(new Date());
 
 function property(){
 
@@ -526,6 +590,12 @@ function property(){
 function message(text){
 
   $("flowMessage").textContent=text;
+
+}
+
+function notice(text){
+
+  $("selectionNotice").textContent=text;
 
 }
 
@@ -542,24 +612,99 @@ function bookingStatus(key,list=bookings){
   ))return "booked";
 
   if(active.some(b=>
-    b.stato==="in_attesa"
+    b.stato==="in_attesa" &&
+    Date.parse(b.scadenza_il)>Date.now()
   ))return "pending";
 
   return null;
 
 }
 
+function resetSelection(){
+
+  selected.clear();
+
+  rangeStart=null;
+  rangeEnd=null;
+
+  notice("");
+
+}
+
+function setMode(value){
+
+  if(saving || mode===value)return;
+
+  mode=value;
+
+  resetSelection();
+
+  $("saveMessage").textContent="";
+
+  renderCalendar();
+
+}
+
+$("rangeMode").onclick=()=>setMode("range");
+$("singleMode").onclick=()=>setMode("single");
+
 function updateSelection(){
 
   const list=[...selected].sort();
 
+  $("rangeMode").classList.toggle(
+    "active",mode==="range"
+  );
+
+  $("singleMode").classList.toggle(
+    "active",mode==="single"
+  );
+
+  $("rangeMode").setAttribute(
+    "aria-pressed",mode==="range"
+  );
+
+  $("singleMode").setAttribute(
+    "aria-pressed",mode==="single"
+  );
+
   $("selectionCount").textContent=
     list.length+" giorni selezionati";
+
+  $("firstDate").textContent=
+    prettyDate(list[0]);
+
+  $("lastDate").textContent=
+    prettyDate(list[list.length-1]);
+
+  if(mode==="single"){
+
+    $("smartHint").textContent=
+      "Tocca ogni giorno che vuoi modificare.";
+
+  }else if(!rangeStart){
+
+    $("smartHint").textContent=
+      "Seleziona il primo giorno del periodo.";
+
+  }else if(!rangeEnd){
+
+    $("smartHint").textContent=
+      "Ora seleziona l'ultimo giorno. "+
+      "Puoi anche cambiare mese.";
+
+  }else{
+
+    $("smartHint").textContent=
+      "Periodo selezionato. "+
+      "Tocca una nuova data per iniziare un altro periodo.";
+
+  }
 
   if(!list.length){
 
     $("selectionDetails").textContent=
-      "Tocca le date da modificare.";
+      "Seleziona le date da modificare.";
 
   }else{
 
@@ -612,9 +757,13 @@ function updateSelection(){
   $("property").disabled=saving;
   $("prevMonth").disabled=saving;
   $("nextMonth").disabled=saving;
-  $("selectRange").disabled=saving || !ready;
+  $("rangeMode").disabled=saving;
+  $("singleMode").disabled=saving;
   $("selectMonth").disabled=saving || !ready;
   $("clearSelection").disabled=saving;
+  $("nightPrice").disabled=saving;
+  $("minimumNights").disabled=saving;
+  $("availability").disabled=saving;
 
 }
 
@@ -675,6 +824,14 @@ function renderCalendar(){
 
       button.classList.add("selected");
 
+      if(mode==="single" ||
+         key===rangeStart ||
+         key===rangeEnd){
+
+        button.classList.add("endpoint");
+
+      }
+
     }
 
     button.disabled=
@@ -700,7 +857,8 @@ function renderCalendar(){
     button.append(number,price);
 
     button.setAttribute(
-      "aria-pressed",selected.has(key)
+      "aria-pressed",
+      String(selected.has(key))
     );
 
     button.setAttribute(
@@ -708,25 +866,7 @@ function renderCalendar(){
       prettyDate(key)+" "+price.textContent
     );
 
-    button.onclick=()=>{
-
-      if(!ready || saving)return;
-
-      if(selected.has(key)){
-
-        selected.delete(key);
-
-      }else{
-
-        selected.add(key);
-
-      }
-
-      $("saveMessage").textContent="";
-
-      renderCalendar();
-
-    };
+    button.onclick=()=>selectDay(key);
 
     calendar.appendChild(button);
 
@@ -742,7 +882,9 @@ async function getBookings(
 
   const {data,error}=await db
     .from("prenotazioni")
-    .select("check_in,check_out,stato")
+    .select(
+      "check_in,check_out,stato,scadenza_il"
+    )
     .eq("alloggio_id",propertyId)
     .lt("check_in",end)
     .gt("check_out",start)
@@ -758,14 +900,158 @@ async function getBookings(
 
 }
 
+async function selectDay(key){
+
+  if(!ready || saving)return;
+
+  if(key<dateKey(new Date()) ||
+     bookingStatus(key))return;
+
+  $("saveMessage").textContent="";
+
+  notice("");
+
+  // MODALITÀ SINGOLI GIORNI
+
+  if(mode==="single"){
+
+    if(selected.has(key)){
+
+      selected.delete(key);
+
+    }else{
+
+      if(selected.size>=366){
+
+        notice("Massimo 366 giorni alla volta.");
+        return;
+
+      }
+
+      selected.add(key);
+
+    }
+
+    renderCalendar();
+
+    return;
+
+  }
+
+  // MODALITÀ INTERO PERIODO
+  // Primo tocco: data iniziale.
+
+  if(!rangeStart || rangeEnd){
+
+    resetSelection();
+
+    rangeStart=key;
+
+    selected.add(key);
+
+    renderCalendar();
+
+    return;
+
+  }
+
+  // Secondo tocco: data finale.
+  // Funziona anche tra mesi e anni diversi.
+
+  const start=key<rangeStart
+    ? key:rangeStart;
+
+  const end=key<rangeStart
+    ? rangeStart:key;
+
+  const days=Math.round(
+    (Date.parse(end)-Date.parse(start))
+    /86400000
+  )+1;
+
+  if(days>366){
+
+    notice("Seleziona massimo 366 giorni.");
+
+    return;
+
+  }
+
+  const p=property();
+
+  if(!p)return;
+
+  saving=true;
+
+  notice("Verifica delle date...");
+
+  renderCalendar();
+
+  try{
+
+    const reservations=await getBookings(
+      p.id,start,addDays(end,1)
+    );
+
+    selected.clear();
+
+    rangeStart=start;
+    rangeEnd=end;
+
+    let skipped=0;
+
+    for(let i=0;i<days;i++){
+
+      const date=addDays(start,i);
+
+      if(bookingStatus(date,reservations) ||
+         date<dateKey(new Date())){
+
+        skipped++;
+
+      }else{
+
+        selected.add(date);
+
+      }
+
+    }
+
+    if(!selected.size){
+
+      rangeStart=null;
+      rangeEnd=null;
+
+    }
+
+    notice(
+      skipped
+      ? skipped+" giorni non modificabili esclusi."
+      : "Periodo selezionato correttamente."
+    );
+
+  }catch(error){
+
+    notice("Errore: "+error.message);
+
+  }finally{
+
+    saving=false;
+
+    renderCalendar();
+
+  }
+
+}
+
 async function loadCalendar(){
 
   const version=++loadVersion;
 
   ready=false;
 
-  // Non cancellare selected.
-  // La selezione resta valida tra mesi diversi.
+  // La selezione NON viene cancellata
+  // durante il cambio di mese.
 
   availability.clear();
   bookings=[];
@@ -809,6 +1095,8 @@ async function loadCalendar(){
 
     bookings=reservations;
 
+    let removed=0;
+
     for(const key of selected){
 
       if(key>=start && key<end &&
@@ -816,7 +1104,28 @@ async function loadCalendar(){
 
         selected.delete(key);
 
+        removed++;
+
       }
+
+    }
+
+    if(rangeStart && !selected.has(rangeStart)){
+
+      rangeStart=null;
+      rangeEnd=null;
+
+    }else if(rangeEnd && !selected.has(rangeEnd)){
+
+      rangeEnd=null;
+
+    }
+
+    if(removed){
+
+      notice(
+        removed+" date occupate escluse."
+      );
 
     }
 
@@ -838,11 +1147,9 @@ async function loadCalendar(){
 
 function changeProperty(){
 
-  selected.clear();
+  resetSelection();
 
   $("saveMessage").textContent="";
-  $("rangeStart").value="";
-  $("rangeEnd").value="";
 
   const p=property();
 
@@ -890,7 +1197,7 @@ $("clearSelection").onclick=()=>{
 
   if(saving)return;
 
-  selected.clear();
+  resetSelection();
 
   $("saveMessage").textContent="";
 
@@ -906,6 +1213,8 @@ $("selectMonth").onclick=()=>{
   const m=currentMonth.getMonth();
   const total=new Date(y,m+1,0).getDate();
 
+  const keys=[];
+
   for(let d=1;d<=total;d++){
 
     const key=dateKey(new Date(y,m,d));
@@ -913,101 +1222,34 @@ $("selectMonth").onclick=()=>{
     if(key>=dateKey(new Date()) &&
        !bookingStatus(key)){
 
-      selected.add(key);
+      keys.push(key);
 
     }
 
   }
 
-  renderCalendar();
+  const combined=new Set([
+    ...selected,...keys
+  ]);
 
-};
+  if(combined.size>366){
 
-$("rangeStart").onchange=()=>{
-
-  $("rangeEnd").min=
-    $("rangeStart").value ||
-    dateKey(new Date());
-
-};
-
-$("selectRange").onclick=async()=>{
-
-  if(!ready || saving)return;
-
-  const start=$("rangeStart").value;
-  const end=$("rangeEnd").value;
-
-  if(!start || !end ||
-     end<start ||
-     start<dateKey(new Date())){
-
-    $("saveMessage").textContent=
-      "Controlla le date del periodo.";
+    notice("Massimo 366 giorni alla volta.");
 
     return;
 
   }
 
-  const days=Math.round(
-    (Date.parse(end)-Date.parse(start))
-    /86400000
-  )+1;
+  mode="single";
 
-  if(days>366){
+  rangeStart=null;
+  rangeEnd=null;
 
-    $("saveMessage").textContent=
-      "Seleziona massimo 366 giorni.";
+  keys.forEach(key=>selected.add(key));
 
-    return;
+  notice("Giorni modificabili del mese selezionati.");
 
-  }
-
-  saving=true;
   renderCalendar();
-
-  try{
-
-    const reservations=await getBookings(
-      property().id,start,addDays(end,1)
-    );
-
-    let skipped=0;
-
-    for(let i=0;i<days;i++){
-
-      const key=addDays(start,i);
-
-      if(bookingStatus(key,reservations)){
-
-        selected.delete(key);
-        skipped++;
-
-      }else{
-
-        selected.add(key);
-
-      }
-
-    }
-
-    $("saveMessage").textContent=
-      "Periodo selezionato."+
-      (skipped
-      ? " "+skipped+" giorni occupati esclusi."
-      : "");
-
-  }catch(error){
-
-    $("saveMessage").textContent=
-      "Errore: "+error.message;
-
-  }finally{
-
-    saving=false;
-    renderCalendar();
-
-  }
 
 };
 
@@ -1043,7 +1285,7 @@ $("availabilityForm")
   if(keys.length>366){
 
     $("saveMessage").textContent=
-      "Puoi salvare massimo 366 giorni alla volta.";
+      "Massimo 366 giorni alla volta.";
 
     return;
 
@@ -1077,9 +1319,14 @@ $("availabilityForm")
         key=>selected.delete(key)
       );
 
+      rangeStart=null;
+      rangeEnd=null;
+      mode="single";
+
       $("saveMessage").textContent=
-        "Alcune date non sono più modificabili. "+
-        "Sono state escluse. Controlla e salva di nuovo.";
+        "Alcune date sono state escluse "+
+        "perché non più modificabili. "+
+        "Controlla e salva nuovamente.";
 
       await loadCalendar();
 
@@ -1105,7 +1352,7 @@ $("availabilityForm")
 
     if(error)throw error;
 
-    selected.clear();
+    resetSelection();
 
     $("saveMessage").textContent=
       keys.length+" giorni salvati correttamente.";
@@ -1120,6 +1367,7 @@ $("availabilityForm")
   }finally{
 
     saving=false;
+
     renderCalendar();
 
   }
@@ -1159,7 +1407,7 @@ async function init(){
 
     if(result.error)throw result.error;
 
-    properties=result.data;
+    properties=result.data || [];
 
     if(!properties.length){
 
