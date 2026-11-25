@@ -1362,6 +1362,301 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 });
 </script>
+<style>
+.phone-grid{
+  display:grid;
+  grid-template-columns:minmax(0,110px) minmax(0,1fr);
+  gap:8px;
+  width:100%;
+  margin-top:9px;
+}
+
+.phone-grid select,
+.phone-grid input{
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  margin:0!important;
+  padding:15px 8px;
+  border:1px solid #FFFFFF15;
+  border-radius:14px;
+  background:#17181D;
+  color:#F4F1EA;
+  font-size:16px;
+  box-sizing:border-box;
+}
+
+.phone-grid select:focus{
+  outline:none;
+  border-color:#E6D9FF;
+}
+
+.phone-feedback{
+  font-size:11px;
+  margin-top:8px;
+  color:#A6A8B2;
+  line-height:1.5;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+
+  const lib=window.libphonenumber;
+
+  if(!lib){
+    console.error('STAYGO Global Phone non disponibile');
+    return;
+  }
+
+  const names=new Intl.DisplayNames(
+    ['it'],{type:'region'}
+  );
+
+  function flag(code){
+    return String.fromCodePoint(
+      ...[...code].map(
+        c=>127397+c.charCodeAt(0)
+      )
+    );
+  }
+
+  const countries=lib.getCountries()
+    .map(code=>({
+      code,
+      name:names.of(code),
+      prefix:lib.getCountryCallingCode(code)
+    }))
+    .sort((a,b)=>
+      a.name.localeCompare(b.name,'it')
+    );
+
+  function createPhonePicker(phoneId,countryId){
+
+    const original=document.getElementById(phoneId);
+    const residence=document.getElementById(countryId);
+
+    if(!original || !residence) return;
+
+    original.type='hidden';
+    original.required=false;
+
+    const grid=document.createElement('div');
+    grid.className='phone-grid';
+
+    const prefix=document.createElement('select');
+
+    prefix.setAttribute(
+      'aria-label','Prefisso internazionale'
+    );
+
+    countries.forEach(c=>{
+
+      prefix.add(new Option(
+        flag(c.code)+' +'+c.prefix+' — '+c.name,
+        c.code
+      ));
+
+    });
+
+    prefix.value='IT';
+
+    const number=document.createElement('input');
+
+    number.type='tel';
+    number.inputMode='tel';
+    number.autocomplete='tel-national';
+    number.placeholder='333 1234567';
+
+    number.setAttribute(
+      'aria-label','Numero di telefono'
+    );
+
+    const feedback=document.createElement('div');
+
+    feedback.className='phone-feedback';
+    feedback.setAttribute('aria-live','polite');
+
+    let manualPrefix=false;
+
+    function validate(){
+
+      const value=number.value.trim();
+
+      original.value='';
+
+      if(!value){
+
+        feedback.textContent=
+          'Inserisci il tuo numero di telefono.';
+
+        feedback.style.color='#A6A8B2';
+
+        return;
+      }
+
+      try{
+
+        const phone=lib.parsePhoneNumberFromString(
+          value,
+          prefix.value
+        );
+
+        if(phone && phone.isValid()){
+
+          original.value=phone.number;
+
+          feedback.textContent=
+            '✓ Formato telefonico valido';
+
+          feedback.style.color='#A8DFC0';
+
+        }else{
+
+          feedback.textContent=
+            'Controlla il numero e il prefisso.';
+
+          feedback.style.color='#FF9999';
+
+        }
+
+      }catch(error){
+
+        feedback.textContent=
+          'Numero non valido.';
+
+        feedback.style.color='#FF9999';
+
+      }
+    }
+
+    function sync(){
+
+      const saved=original.value;
+
+      const code=residence.dataset.countryCode;
+
+      if(code && countries.some(c=>c.code===code)){
+        prefix.value=code;
+      }else{
+        prefix.value='IT';
+      }
+
+      number.value='';
+
+      if(saved){
+
+        const phone=
+          lib.parsePhoneNumberFromString(saved);
+
+        if(phone){
+
+          if(phone.country &&
+             countries.some(c=>c.code===phone.country)){
+
+            prefix.value=phone.country;
+
+          }
+
+          number.value=phone.country
+            ? phone.nationalNumber
+            : phone.number;
+
+        }else{
+
+          number.value=saved;
+
+        }
+      }
+
+      manualPrefix=false;
+
+      validate();
+    }
+
+    residence.addEventListener('change',()=>{
+
+      const code=residence.dataset.countryCode;
+
+      if(!manualPrefix &&
+         countries.some(c=>c.code===code)){
+
+        prefix.value=code;
+
+      }
+
+      validate();
+
+    });
+
+    prefix.addEventListener('change',()=>{
+
+      manualPrefix=true;
+
+      validate();
+
+    });
+
+    number.addEventListener('input',validate);
+
+    number.addEventListener('blur',()=>{
+
+      const value=number.value.trim();
+
+      if(value.startsWith('+')){
+
+        const phone=
+          lib.parsePhoneNumberFromString(value);
+
+        if(phone && phone.isValid() && phone.country){
+
+          prefix.value=phone.country;
+
+          number.value=phone.nationalNumber;
+
+          manualPrefix=true;
+
+        }
+      }
+
+      validate();
+
+    });
+
+    grid.append(prefix,number);
+
+    original.after(grid,feedback);
+
+    const section=original.closest('section');
+
+    if(section){
+
+      new MutationObserver(()=>{
+
+        if(!section.hidden) sync();
+
+      }).observe(section,{
+        attributes:true,
+        attributeFilter:['hidden']
+      });
+
+    }
+
+    original.closest('form')?.addEventListener(
+      'reset',
+      ()=>setTimeout(sync,0)
+    );
+
+    sync();
+
+  }
+
+  createPhonePicker('regTelefono','regPaese');
+
+  createPhonePicker('editTelefono','editPaese');
+
+});
+</script>
 <script src="account.js"></script>
 
 </body>
