@@ -943,6 +943,175 @@ footer p{
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+.birth-grid{
+  display:grid;
+  grid-template-columns:1fr 1.4fr 1fr;
+  gap:7px;
+  width:100%;
+  margin-top:9px;
+}
+
+.birth-grid select{
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  padding:14px 6px;
+  border:1px solid #FFFFFF15;
+  border-radius:13px;
+  background:#17181D;
+  color:#F4F1EA;
+  font-size:16px;
+  color-scheme:dark;
+  box-sizing:border-box;
+}
+
+.birth-grid select:focus{
+  outline:none;
+  border-color:#E6D9FF;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const months = [
+    'Gennaio','Febbraio','Marzo',
+    'Aprile','Maggio','Giugno',
+    'Luglio','Agosto','Settembre',
+    'Ottobre','Novembre','Dicembre'
+  ];
+
+  function createBirthPicker(id){
+
+    const original = document.getElementById(id);
+
+    if(!original) return;
+
+    original.type = 'hidden';
+    original.required = false;
+
+    const grid = document.createElement('div');
+    grid.className = 'birth-grid';
+
+    function makeSelect(title){
+
+      const select = document.createElement('select');
+
+      select.setAttribute('aria-label',title);
+      select.add(new Option(title,''));
+
+      return select;
+    }
+
+    const day = makeSelect('Giorno');
+    const month = makeSelect('Mese');
+    const year = makeSelect('Anno');
+
+    months.forEach((name,i)=>{
+      month.add(new Option(name,i+1));
+    });
+
+    const currentYear = new Date().getFullYear();
+
+    for(let y=currentYear-18;y>=currentYear-120;y--){
+      year.add(new Option(y,y));
+    }
+
+    function updateDays(){
+
+      const previous = day.value;
+
+      const max = month.value && year.value
+        ? new Date(
+            Number(year.value),
+            Number(month.value),
+            0
+          ).getDate()
+        : 31;
+
+      day.length = 1;
+
+      for(let d=1;d<=max;d++){
+        day.add(new Option(d,d));
+      }
+
+      day.value = previous;
+    }
+
+    function updateValue(){
+
+      if(!day.value || !month.value || !year.value){
+        original.value = '';
+        return;
+      }
+
+      original.value =
+        year.value + '-' +
+        month.value.padStart(2,'0') + '-' +
+        day.value.padStart(2,'0');
+    }
+
+    function syncFromOriginal(){
+
+      const parts = original.value.split('-');
+
+      year.value = parts[0] || '';
+      month.value = parts[1]
+        ? String(Number(parts[1])) : '';
+
+      updateDays();
+
+      day.value = parts[2]
+        ? String(Number(parts[2])) : '';
+    }
+
+    day.addEventListener('change',updateValue);
+
+    month.addEventListener('change',()=>{
+      updateDays();
+      updateValue();
+    });
+
+    year.addEventListener('change',()=>{
+      updateDays();
+      updateValue();
+    });
+
+    grid.append(day,month,year);
+
+    original.after(grid);
+
+    updateDays();
+    syncFromOriginal();
+
+    const observer = new MutationObserver(()=>{
+      syncFromOriginal();
+    });
+
+    const section = original.closest('section');
+
+    if(section){
+      observer.observe(section,{
+        attributes:true,
+        attributeFilter:['hidden']
+      });
+    }
+
+    const form = original.closest('form');
+
+    if(form){
+      form.addEventListener('reset',()=>{
+        setTimeout(syncFromOriginal,0);
+      });
+    }
+  }
+
+  createBirthPicker('regNascita');
+  createBirthPicker('editNascita');
+
+});
+</script>
 <script src="account.js"></script>
 
 </body>
