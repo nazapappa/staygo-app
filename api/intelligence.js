@@ -4,7 +4,7 @@ const SUPABASE_URL =
 const SUPABASE_PUBLIC_KEY =
   "sb_publishable_7PH45XJmmxUiZfobZQS6SA_1rtHRZ72";
 
-const MODEL = "gemini-4-hydrogen";
+const MODEL = "gemini-3.8-flash";
 
 const MAX_OUTPUT = 4096;
 const RESERVED_COST = 0.10;
