@@ -1,1 +1,361 @@
-<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Organizza con AI | STAYGO</title><link rel="stylesheet" href="style.css"></head><body><header><div class="wrap bar"><a class="logo" href="index.html">STAY<span>GO</span></a><nav><a class="" href="index.html">Home</a><a class="" href="alloggi.html">Cerca alloggi</a><a class="active" href="ai.html">Organizza con AI</a><a class="" href="host.html">Diventa Host</a><a class="" href="annunci.html">I miei annunci</a><a href="account.html">Accedi / Account</a></nav></div></header><section class="hero split"><div class="wrap"><div><div class="eyebrow">STAYGO / TRAVEL STUDIO</div><h1>Il tuo viaggio, su misura.</h1><p>Un percorso guidato per scegliere la destinazione e immaginare il tuo itinerario. Per ora non è collegato a un modello AI reale.</p><div class="actions"></div></div><img src="foto-3.jpg" alt="Immagine illustrativa di un alloggio"></div></section><section class="section"><div class="wrap"><h2>Raccontaci il tuo viaggio</h2><div class="panel"><form id="travelForm" class="form"><label>Destinazione<input name="destination" placeholder="Es. Roma, Puglia, ovunque" required></label><label>Durata<select name="days"><option>2 giorni</option><option>3 giorni</option><option>5 giorni</option><option>7 giorni</option></select></label><label>Budget indicativo<input name="budget" placeholder="Es. €500"></label><label>Atmosfera<select name="style"><option>Relax</option><option>Cultura</option><option>Romantico</option><option>Avventura</option></select></label><button class="cta wide">Crea un'idea di viaggio</button></form><div id="travelResult" class="notice hidden" style="margin-top:20px" aria-live="polite"></div></div></div></section><footer class="footer"><div class="wrap"><b>STAYGO</b><p>Prototipo dimostrativo · Fotografie illustrative generate digitalmente · Nessuna disponibilità o prenotazione reale.</p></div></footer><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14151A">
+<title>STAYGO Intelligence</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+body{
+  padding-bottom:110px;
+}
+.ai-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:24px 5%;
+  border:0;
+}
+.ai-header .logo{
+  font-size:34px;
+}
+.ai-status{
+  font-size:10px;
+  letter-spacing:2px;
+  color:var(--moon);
+}
+.ai-main{
+  width:90%;
+  max-width:850px;
+  margin:auto;
+}
+.intro{
+  text-align:center;
+  padding:35px 0 25px;
+}
+.orb{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  margin:0 auto 35px;
+  background:radial-gradient(
+    circle at 30% 25%,
+    #fff 0%,
+    #E6D9FF 30%,
+    #A99AC9 55%,
+    #40344F 100%
+  );
+  box-shadow:
+    0 0 45px #E6D9FF40,
+    0 0 100px #A99AC925;
+  animation:breathe 5s ease-in-out infinite;
+}
+@keyframes breathe{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+}
+.intro h1{
+  font-size:clamp(36px,6vw,60px);
+  font-weight:500;
+  letter-spacing:-2px;
+}
+.intro h1 em{
+  font-family:Georgia,serif;
+  font-weight:400;
+  color:var(--moon);
+}
+.intro p{
+  font-size:14px;
+}
+.suggestions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:20px 0;
+}
+.suggestion{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  color:var(--light);
+  text-align:left;
+  justify-content:flex-start;
+  padding:18px;
+  font-weight:400;
+  line-height:1.5;
+  font-size:13px;
+}
+.conversation{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin:25px 0;
+}
+.message{
+  padding:20px;
+  border-radius:22px;
+  line-height:1.7;
+  font-size:14px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.user-message{
+  background:#34303F;
+  align-self:flex-end;
+  max-width:85%;
+  border-bottom-right-radius:5px;
+}
+.ai-message{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-bottom-left-radius:5px;
+}
+.composer{
+  background:var(--surface);
+  border:1px solid #E6D9FF30;
+  border-radius:26px;
+  padding:18px;
+}
+.composer textarea{
+  background:transparent;
+  border:0;
+  padding:8px;
+  margin:0;
+  min-height:90px;
+}
+.composer-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.composer-bottom small{
+  color:var(--muted);
+  font-size:10px;
+}
+.send{
+  width:48px;
+  height:48px;
+  padding:0;
+  font-size:24px;
+}
+.ai-notice{
+  text-align:center;
+  font-size:11px;
+  color:var(--muted);
+  margin:20px 0;
+}
+@media(prefers-reduced-motion:reduce){
+  .orb{animation:none}
+}
+</style>
+</head>
+
+<body>
+
+<header class="ai-header">
+  <a class="logo" href="index.html">
+    staygo<span>°</span>
+  </a>
+  <span class="ai-status">INTELLIGENCE / DEMO</span>
+</header>
+
+<main class="ai-main">
+
+  <section class="intro">
+    <div class="orb"></div>
+
+    <div class="eyebrow">
+      Your personal travel companion
+    </div>
+
+    <h1>
+      Dove ti porta<br>
+      <em>l'immaginazione?</em>
+    </h1>
+
+    <p>
+      Raccontami cosa desideri vivere.
+      Il tuo prossimo viaggio comincia qui.
+    </p>
+  </section>
+
+  <div class="suggestions">
+
+    <button class="suggestion" type="button">
+      ❄️ Un Capodanno sulla neve con gli amici
+    </button>
+
+    <button class="suggestion" type="button">
+      ✦ Un weekend romantico e insolito
+    </button>
+
+    <button class="suggestion" type="button">
+      ☀️ Una fuga al mare lontano da tutti
+    </button>
+
+    <button class="suggestion" type="button">
+      ◇ Un viaggio esclusivo con un piccolo budget
+    </button>
+
+  </div>
+
+  <div id="conversation"
+    class="conversation"
+    aria-live="polite">
+  </div>
+
+  <form class="composer" id="chatForm">
+
+    <textarea
+      id="prompt"
+      required
+      maxlength="2000"
+      aria-label="Descrivi il tuo viaggio"
+      placeholder="Raccontami il viaggio che immagini...">
+    </textarea>
+
+    <div class="composer-bottom">
+      <small>STAYGO Intelligence · Anteprima</small>
+
+      <button class="send"
+        type="submit"
+        aria-label="Invia messaggio">
+        ↑
+      </button>
+    </div>
+
+  </form>
+
+  <p class="ai-notice">
+    Assistente dimostrativo.
+    Non ancora collegato a un modello AI reale.
+  </p>
+
+</main>
+
+<nav class="bottom-nav"
+  aria-label="Navigazione principale">
+
+  <a href="index.html">
+    <svg viewBox="0 0 24 24">
+      <path d="M3 10l9-7 9 7v11H3z"/>
+      <path d="M9 21v-8h6v8"/>
+    </svg>
+    Home
+  </a>
+
+  <a href="alloggi.html">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M16 8l-3 5-5 3 3-5z"/>
+    </svg>
+    Esplora
+  </a>
+
+  <a class="active"
+    href="ai.html"
+    aria-current="page">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>
+    </svg>
+    STAY AI
+  </a>
+
+  <a href="host.html">
+    <svg viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="5"/>
+      <path d="M12 7v10M7 12h10"/>
+    </svg>
+    Host
+  </a>
+
+  <a href="account.html">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21v-2a8 8 0 0116 0v2"/>
+    </svg>
+    Profilo
+  </a>
+
+</nav>
+
+<script>
+const prompt = document.getElementById('prompt');
+const conversation =
+  document.getElementById('conversation');
+
+function addMessage(text,type){
+  const message = document.createElement('div');
+  message.className = 'message '+type;
+  message.textContent = text;
+  conversation.appendChild(message);
+}
+
+document.querySelectorAll('.suggestion')
+.forEach(button=>{
+  button.onclick=()=>{
+    prompt.value=button.textContent.trim();
+    prompt.focus();
+  };
+});
+
+const dream=sessionStorage.getItem('staygoDream');
+
+if(dream){
+  prompt.value=dream;
+  sessionStorage.removeItem('staygoDream');
+}
+
+const mood=new URLSearchParams(location.search)
+.get('mood');
+
+const moods={
+  liberta:'Vorrei un viaggio all’insegna della libertà.',
+  romanticismo:'Vorrei organizzare un viaggio romantico.',
+  avventura:'Cerco un viaggio ricco di avventure.',
+  esclusivita:'Vorrei vivere un’esperienza esclusiva.',
+  relax:'Cerco un viaggio di relax e tranquillità.'
+};
+
+if(!dream && mood && moods[mood]){
+  prompt.value=moods[mood];
+}
+
+document.getElementById('chatForm')
+.onsubmit=e=>{
+  e.preventDefault();
+
+  const text=prompt.value.trim();
+  if(!text)return;
+
+  addMessage(text,'user-message');
+  prompt.value='';
+
+  addMessage(
+    'Questa è un’anteprima di STAYGO Intelligence.\n\n'+
+    'Nella versione completa potrò elaborare il tuo viaggio, '+
+    'confrontare destinazioni, alloggi, trasporti, esperienze '+
+    'e organizzare il tuo itinerario in base al budget.\n\n'+
+    'Nel frattempo puoi esplorare gli alloggi pubblicati.',
+    'ai-message'
+  );
+
+  const link=document.createElement('a');
+  link.className='outline';
+  link.href='alloggi.html';
+  link.textContent='Esplora gli alloggi ↗';
+  conversation.appendChild(link);
+
+  conversation.lastElementChild.scrollIntoView({
+    behavior:'smooth',
+    block:'center'
+  });
+};
+</script>
+
+</body>
+</html>
