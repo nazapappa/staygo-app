@@ -64,6 +64,14 @@ function card(a) {
   );
 
   showPhotos(a, n).catch(console.error);
+  if ($('stays')) {
+  n.append(
+    link(
+      'Scopri questo alloggio ↗',
+      'alloggio.html?id=' + encodeURIComponent(a.id)
+    )
+  );
+}
 
   return n;
 }
