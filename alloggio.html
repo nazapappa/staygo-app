@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#14151A">
 <title>Discover | STAYGO°</title>
 
@@ -52,7 +52,7 @@ main{
   color:var(--moon);
   font-size:10px;
   font-weight:600;
-  letter-spacing:4px;
+  letter-spacing:3px;
   text-transform:uppercase;
 }
 h1{
@@ -101,8 +101,8 @@ h1{
 }
 .layout{
   display:grid;
-  grid-template-columns:1.5fr 1fr;
-  gap:55px;
+  grid-template-columns:1.3fr 1fr;
+  gap:40px;
 }
 section{
   padding:25px 0;
@@ -142,29 +142,144 @@ h2{
 }
 .booking{
   align-self:start;
-  position:sticky;
-  top:25px;
-  padding:28px;
+  padding:24px;
   background:var(--surface);
   border:1px solid #ffffff12;
   border-radius:30px;
 }
 .price{
-  font-size:40px;
+  font-size:38px;
   font-weight:600;
   letter-spacing:-2px;
   margin:15px 0;
 }
 .price small{
-  font-size:13px;
+  font-size:12px;
   color:var(--muted);
   letter-spacing:0;
   font-weight:400;
+}
+.flow-title{
+  font-size:26px;
+  letter-spacing:-1px;
+  font-weight:500;
+  margin:25px 0 15px;
 }
 .dates{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
+}
+.date-card{
+  background:var(--dark);
+  padding:15px;
+  border:1px solid #ffffff15;
+  border-radius:16px;
+}
+.date-card small{
+  display:block;
+  font-size:10px;
+  letter-spacing:2px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+.date-card strong{
+  font-size:14px;
+}
+.month-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:24px 0 15px;
+}
+.month-bar button{
+  background:#303039;
+  color:var(--moon);
+  border:0;
+  border-radius:12px;
+  padding:9px 15px;
+  font-size:20px;
+}
+.month-bar button:disabled{
+  opacity:.3;
+}
+.month-bar strong{
+  font-size:14px;
+  text-transform:capitalize;
+}
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:4px;
+}
+.weekday{
+  text-align:center;
+  color:var(--muted);
+  font-size:10px;
+  padding:8px 0;
+}
+.day{
+  min-width:0;
+  min-height:52px;
+  border:1px solid transparent;
+  border-radius:10px;
+  background:#292A32;
+  color:var(--light);
+  padding:5px 1px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+}
+.day strong{
+  font-size:13px;
+}
+.day small{
+  font-size:9px;
+}
+.day:disabled{
+  color:#696A74;
+  cursor:default;
+}
+.day.closed strong{
+  text-decoration:line-through;
+}
+.day.checkout-only{
+  border:1px dashed #E6D9FF60;
+}
+.day.range{
+  background:#51465F;
+}
+.day.selected{
+  background:var(--moon);
+  color:var(--dark);
+}
+.legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin:18px 0;
+  font-size:10px;
+  color:var(--muted);
+}
+.legend span{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:3px;
+}
+.reset{
+  border:0;
+  background:transparent;
+  color:var(--moon);
+  padding:8px 0;
+  font-size:12px;
+  text-decoration:underline;
 }
 label{
   display:block;
@@ -173,7 +288,7 @@ label{
   color:var(--muted);
   margin-top:18px;
 }
-input,select{
+select{
   display:block;
   width:100%;
   min-width:0;
@@ -189,6 +304,7 @@ input,select{
 .total{
   margin:24px 0;
   font-size:17px;
+  line-height:1.7;
 }
 .cta{
   width:100%;
@@ -207,6 +323,21 @@ input,select{
   font-size:12px;
   line-height:1.7;
   color:var(--muted);
+  overflow-wrap:anywhere;
+}
+#hold{
+  margin-top:20px;
+  background:#302A40;
+  border:1px solid #E6D9FF30;
+  border-radius:18px;
+  padding:20px;
+}
+#hold[hidden]{display:none}
+#countdown{
+  font-size:36px;
+  font-weight:600;
+  color:var(--moon);
+  margin:10px 0;
 }
 footer{
   text-align:center;
@@ -244,10 +375,10 @@ footer{
   header{padding:20px 5%}
   main{padding:10px 5% 50px}
   .layout{grid-template-columns:1fr;gap:25px}
-  .booking{position:static}
   .hero{border-radius:24px}
   .gallery img{height:340px}
   h1{letter-spacing:-2px}
+  .booking{padding:16px}
 }
 </style>
 </head>
@@ -304,23 +435,61 @@ footer{
 
     <aside class="booking">
 
-      <div class="eyebrow">Make it yours</div>
+      <div class="eyebrow">
+        STAYGO° / FLOW TRAVELLER
+      </div>
 
       <div class="price">
         <span id="price"></span>
-        <small>/ notte</small>
+        <small>/ tariffa base a notte</small>
       </div>
 
+      <h2 class="flow-title">
+        Quando vuoi partire?
+      </h2>
+
       <div class="dates">
-        <label>
-          ARRIVO
-          <input type="date" id="checkin">
-        </label>
-        <label>
-          PARTENZA
-          <input type="date" id="checkout">
-        </label>
+        <div class="date-card">
+          <small>ARRIVO</small>
+          <strong id="arrival">Seleziona</strong>
+        </div>
+        <div class="date-card">
+          <small>PARTENZA</small>
+          <strong id="departure">Seleziona</strong>
+        </div>
       </div>
+
+      <div class="month-bar">
+        <button id="prevMonth"
+          aria-label="Mese precedente">‹</button>
+        <strong id="monthTitle"></strong>
+        <button id="nextMonth"
+          aria-label="Mese successivo">›</button>
+      </div>
+
+      <div class="calendar" id="calendar"></div>
+
+      <div class="legend">
+        <span>
+          <i class="dot"
+            style="background:#292A32"></i>
+          Disponibile
+        </span>
+        <span>
+          <i class="dot"
+            style="background:#696A74"></i>
+          Non disponibile
+        </span>
+        <span>
+          <i class="dot"
+            style="background:#E6D9FF"></i>
+          Selezionato
+        </span>
+      </div>
+
+      <button class="reset" id="resetDates">
+        Cancella selezione
+      </button>
 
       <label>
         VIAGGIATORI
@@ -332,13 +501,34 @@ footer{
       </div>
 
       <button class="cta" id="reserve" disabled>
-        Calcola il tuo soggiorno ↗
+        Riserva il tuo soggiorno ↗
       </button>
 
-      <p class="note" id="bookingMessage">
-        Anteprima dimostrativa.
-        Nessuna prenotazione o disponibilità reale.
+      <p class="note" id="bookingMessage"
+        role="status">
+        Disponibilità verificate da STAYGO.
+        Ambiente di test, nessun pagamento reale.
       </p>
+
+      <div id="hold" hidden>
+
+        <div class="eyebrow">
+          STAYGO° / TEMPORARY HOLD
+        </div>
+
+        <h3>Le tue date sono riservate.</h3>
+
+        <div id="countdown">30:00</div>
+
+        <p class="note" id="holdDetails"></p>
+
+        <p class="note">
+          Riserva temporanea di test.
+          Il pagamento non è ancora attivo.
+          Non è una prenotazione confermata.
+        </p>
+
+      </div>
 
     </aside>
 
@@ -360,200 +550,781 @@ footer{
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const db = window.supabase.createClient(
+
+const db=window.supabase.createClient(
   'https://zjfcnojzstlwzxeldaqn.supabase.co',
   'sb_publishable_7PH45XJmmxUiZfobZQS6SA_1rtHRZ72'
 );
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-const id = new URLSearchParams(
+const id=new URLSearchParams(
   location.search
 ).get('id');
 
-let nightlyPrice = 0;
+let nightlyPrice=0;
+let dates=new Map();
+let checkin=null;
+let checkout=null;
+let quote=null;
+let loading=true;
+let busy=false;
+let activeHold=null;
+let quoteVersion=0;
+let timer=null;
 
-const money = value =>
+const today=new Date();
+today.setHours(0,0,0,0);
+
+let month=new Date(
+  today.getFullYear(),
+  today.getMonth(),1
+);
+
+const money=value=>
   new Intl.NumberFormat('it-IT',{
     style:'currency',
     currency:'EUR'
   }).format(value);
 
 function localDate(date){
-  const y = date.getFullYear();
-  const m = String(date.getMonth()+1).padStart(2,'0');
-  const d = String(date.getDate()).padStart(2,'0');
-  return `${y}-${m}-${d}`;
+  return date.getFullYear()+'-'+
+    String(date.getMonth()+1).padStart(2,'0')+'-'+
+    String(date.getDate()).padStart(2,'0');
 }
 
-$('checkin').min = localDate(new Date());
+function addDays(key,n){
+  const date=new Date(key+'T12:00:00');
+  date.setDate(date.getDate()+n);
+  return localDate(date);
+}
 
-function calculate(){
-  $('reserve').disabled = true;
-
-  const start = $('checkin').value;
-  const end = $('checkout').value;
-
-  if(!start || !end){
-    $('total').textContent = 'Seleziona le date';
-    return;
-  }
-
-  const nights = Math.round(
-    (Date.parse(end)-Date.parse(start))/86400000
+function nightsBetween(a,b){
+  return Math.round(
+    (Date.parse(b)-Date.parse(a))/86400000
   );
-
-  if(nights <= 0 || start < $('checkin').min){
-    $('total').textContent = 'Controlla le date';
-    return;
-  }
-
-  $('total').textContent =
-    nights + ' notti · ' +
-    money(nights * nightlyPrice);
-
-  $('reserve').disabled = false;
 }
 
-$('checkin').onchange = () => {
-  if($('checkin').value){
-    const next = new Date(
-      $('checkin').value + 'T12:00:00'
+function prettyDate(key){
+  if(!key)return 'Seleziona';
+
+  return new Date(key+'T12:00:00')
+    .toLocaleDateString('it-IT',{
+      day:'numeric',
+      month:'short',
+      year:'numeric'
+    });
+}
+
+function message(text){
+  $('bookingMessage').textContent=text;
+}
+
+function isOpen(key){
+  return dates.get(key)?.disponibile===true;
+}
+
+function validRange(a,b){
+
+  if(!a || !b || b<=a)return false;
+
+  const nights=nightsBetween(a,b);
+
+  if(nights<1 || nights>90)return false;
+
+  for(let i=0;i<nights;i++){
+
+    if(!isOpen(addDays(a,i)))return false;
+
+  }
+
+  return true;
+}
+
+function updateButton(){
+
+  $('reserve').disabled=
+    loading || busy ||
+    Boolean(activeHold) ||
+    !quote;
+
+}
+
+function renderCalendar(){
+
+  const calendar=$('calendar');
+  calendar.replaceChildren();
+
+  $('arrival').textContent=prettyDate(checkin);
+  $('departure').textContent=prettyDate(checkout);
+
+  $('monthTitle').textContent=
+    month.toLocaleDateString('it-IT',{
+      month:'long',
+      year:'numeric'
+    });
+
+  $('prevMonth').disabled=
+    busy || month<=new Date(
+      today.getFullYear(),
+      today.getMonth(),1
     );
 
-    next.setDate(next.getDate()+1);
-    $('checkout').min = localDate(next);
+  const limit=new Date(
+    today.getFullYear(),
+    today.getMonth()+11,1
+  );
 
-    if($('checkout').value < $('checkout').min){
-      $('checkout').value = '';
+  $('nextMonth').disabled=
+    busy || month>=limit;
+
+  $('guests').disabled=
+    busy || Boolean(activeHold);
+
+  $('resetDates').disabled=
+    busy || Boolean(activeHold);
+
+  ['L','M','M','G','V','S','D']
+  .forEach(d=>{
+
+    const el=document.createElement('div');
+    el.className='weekday';
+    el.textContent=d;
+    calendar.append(el);
+
+  });
+
+  const y=month.getFullYear();
+  const m=month.getMonth();
+
+  const offset=
+    (new Date(y,m,1).getDay()+6)%7;
+
+  for(let i=0;i<offset;i++){
+    calendar.append(
+      document.createElement('div')
+    );
+  }
+
+  const count=new Date(y,m+1,0).getDate();
+
+  for(let d=1;d<=count;d++){
+
+    const key=localDate(new Date(y,m,d));
+
+    const info=dates.get(key);
+
+    const open=isOpen(key);
+
+    const choosingEnd=checkin && !checkout;
+
+    const canEnd=choosingEnd &&
+      validRange(checkin,key);
+
+    const button=document.createElement('button');
+
+    button.type='button';
+    button.className='day';
+
+    if(!open && !canEnd){
+      button.classList.add('closed');
     }
+
+    if(!open && canEnd){
+      button.classList.add('checkout-only');
+    }
+
+    if(checkin && checkout &&
+       key>checkin && key<checkout){
+
+      button.classList.add('range');
+
+    }
+
+    if(key===checkin || key===checkout){
+
+      button.classList.add('selected');
+
+    }
+
+    button.disabled=
+      loading || busy ||
+      Boolean(activeHold) ||
+      key<localDate(today) ||
+      (!open && !canEnd);
+
+    const number=document.createElement('strong');
+    number.textContent=d;
+
+    const price=document.createElement('small');
+
+    price.textContent=open
+      ? Number(info.prezzo_notte)
+        .toLocaleString('it-IT')+'€'
+      : canEnd?'Uscita':'—';
+
+    button.append(number,price);
+
+    button.setAttribute(
+      'aria-label',
+      prettyDate(key)+' '+price.textContent
+    );
+
+    button.setAttribute(
+      'aria-pressed',
+      key===checkin || key===checkout
+    );
+
+    button.onclick=()=>selectDate(key);
+
+    calendar.append(button);
+
   }
 
-  calculate();
-};
+  updateButton();
 
-$('checkout').onchange = calculate;
+}
 
-$('reserve').onclick = () => {
-  calculate();
+async function selectDate(key){
 
-  if(!$('reserve').disabled){
-    $('bookingMessage').textContent =
-      'Preventivo indicativo calcolato. ' +
-      'Le prenotazioni reali non sono ancora attive.';
+  if(busy || activeHold)return;
+
+  quote=null;
+  quoteVersion++;
+
+  if(!checkin || checkout || key<=checkin){
+
+    if(!isOpen(key))return;
+
+    checkin=key;
+    checkout=null;
+
+    message('Ora seleziona la data di partenza.');
+
+  }else{
+
+    if(!validRange(checkin,key)){
+
+      message(
+        'Il periodo contiene notti non disponibili '+
+        'oppure supera 90 notti.'
+      );
+
+      return;
+
+    }
+
+    checkout=key;
+
   }
-};
 
-$('close').onclick = () => {
-  $('lightbox').hidden = true;
-};
+  renderCalendar();
+  await calculate();
 
-$('lightbox').onclick = e => {
-  if(e.target === $('lightbox')){
-    $('lightbox').hidden = true;
+}
+
+async function loadCalendar(){
+
+  loading=true;
+  renderCalendar();
+
+  const start=localDate(new Date(
+    today.getFullYear(),
+    today.getMonth(),1
+  ));
+
+  const end=addDays(start,366);
+
+  try{
+
+    const {data,error}=await db.rpc(
+      'flow_calendario',{
+        p_alloggio:id,
+        p_da:start,
+        p_a:end
+      }
+    );
+
+    if(error)throw error;
+
+    dates=new Map(
+      data.map(d=>[d.data,d])
+    );
+
+    loading=false;
+
+    renderCalendar();
+
+    if(![...dates.values()].some(
+      d=>d.disponibile
+    )){
+
+      message(
+        'Non ci sono ancora date disponibili.'
+      );
+
+    }
+
+  }catch(error){
+
+    loading=true;
+
+    message('Calendario: '+error.message);
+
+    renderCalendar();
+
   }
+
+}
+
+async function calculate(){
+
+  const version=++quoteVersion;
+
+  quote=null;
+  updateButton();
+
+  if(!checkin || !checkout){
+
+    $('total').textContent=checkin
+      ? 'Seleziona la partenza'
+      : 'Seleziona le date';
+
+    return;
+
+  }
+
+  $('total').textContent=
+    'Verifica del soggiorno...';
+
+  try{
+
+    const {data,error}=await db.rpc(
+      'flow_preventivo',{
+        p_alloggio:id,
+        p_check_in:checkin,
+        p_check_out:checkout,
+        p_ospiti:Number($('guests').value)
+      }
+    );
+
+    if(version!==quoteVersion)return;
+
+    if(error)throw error;
+
+    if(!data?.disponibile){
+
+      throw new Error(
+        'Periodo non disponibile'
+      );
+
+    }
+
+    quote=data;
+
+    $('total').textContent=
+      data.notti+' notti · '+
+      money(data.prezzo_totale);
+
+    message(
+      'Preventivo verificato. '+
+      'Nessun pagamento reale.'
+    );
+
+  }catch(error){
+
+    if(version!==quoteVersion)return;
+
+    $('total').textContent=
+      'Soggiorno non disponibile';
+
+    message(error.message);
+
+  }
+
+  updateButton();
+
+}
+
+function startTimer(){
+
+  clearInterval(timer);
+
+  $('hold').hidden=false;
+
+  $('holdDetails').textContent=
+    prettyDate(activeHold.check_in)+' — '+
+    prettyDate(activeHold.check_out)+' · '+
+    money(activeHold.prezzo_totale);
+
+  function tick(){
+
+    if(!activeHold)return;
+
+    const seconds=Math.max(
+      0,
+      Math.ceil(
+        (Date.parse(activeHold.scadenza_il)-
+        Date.now())/1000
+      )
+    );
+
+    $('countdown').textContent=
+      String(Math.floor(seconds/60))
+        .padStart(2,'0')+':'+
+      String(seconds%60).padStart(2,'0');
+
+    if(seconds===0){
+
+      clearInterval(timer);
+
+      activeHold=null;
+      quote=null;
+      checkin=null;
+      checkout=null;
+
+      $('hold').hidden=true;
+      $('total').textContent='Seleziona le date';
+
+      message(
+        'Riserva scaduta. Seleziona nuove date.'
+      );
+
+      loadCalendar();
+
+    }
+
+  }
+
+  timer=setInterval(tick,1000);
+
+  tick();
+  renderCalendar();
+
+}
+
+$('reserve').onclick=async()=>{
+
+  if(!quote || busy || activeHold)return;
+
+  busy=true;
+  renderCalendar();
+
+  try{
+
+    const {data:auth,error:authError}=
+      await db.auth.getUser();
+
+    if(authError || !auth.user){
+
+      message('Accedi per riservare il soggiorno.');
+
+      const link=document.createElement('a');
+
+      link.href='account.html';
+      link.textContent=' Accedi ↗';
+      link.style.color='#E6D9FF';
+
+      $('bookingMessage').append(link);
+
+      return;
+
+    }
+
+    const {data,error}=await db.rpc(
+      'flow_prenota',{
+        p_alloggio:id,
+        p_check_in:checkin,
+        p_check_out:checkout,
+        p_ospiti:Number($('guests').value)
+      }
+    );
+
+    if(error)throw error;
+
+    activeHold={
+      ...data,
+      check_in:checkin,
+      check_out:checkout
+    };
+
+    quote=null;
+
+    $('total').textContent=
+      money(data.prezzo_totale);
+
+    message(
+      'Riserva temporanea creata correttamente.'
+    );
+
+    startTimer();
+
+  }catch(error){
+
+    quote=null;
+
+    await loadCalendar();
+
+    message(error.message);
+
+  }finally{
+
+    busy=false;
+    renderCalendar();
+
+  }
+
+};
+
+async function recoverHold(){
+
+  const {data:auth}=await db.auth.getUser();
+
+  if(!auth?.user)return;
+
+  const {data,error}=await db
+    .from('prenotazioni')
+    .select(
+      'id,check_in,check_out,ospiti,'+
+      'prezzo_totale,scadenza_il'
+    )
+    .eq('alloggio_id',id)
+    .eq('viaggiatore_id',auth.user.id)
+    .eq('stato','in_attesa')
+    .gt('scadenza_il',new Date().toISOString())
+    .limit(1)
+    .maybeSingle();
+
+  if(error){
+
+    message(
+      'Impossibile verificare le riserve esistenti.'
+    );
+
+    return;
+
+  }
+
+  if(!data)return;
+
+  activeHold=data;
+  checkin=data.check_in;
+  checkout=data.check_out;
+
+  $('guests').value=data.ospiti;
+
+  const date=new Date(checkin+'T12:00:00');
+
+  month=new Date(
+    date.getFullYear(),date.getMonth(),1
+  );
+
+  $('total').textContent=
+    money(data.prezzo_totale);
+
+  startTimer();
+
+}
+
+$('prevMonth').onclick=()=>{
+
+  if(busy)return;
+
+  month.setMonth(month.getMonth()-1);
+
+  renderCalendar();
+
+};
+
+$('nextMonth').onclick=()=>{
+
+  if(busy)return;
+
+  month.setMonth(month.getMonth()+1);
+
+  renderCalendar();
+
+};
+
+$('resetDates').onclick=()=>{
+
+  if(busy || activeHold)return;
+
+  checkin=null;
+  checkout=null;
+  quote=null;
+  quoteVersion++;
+
+  $('total').textContent='Seleziona le date';
+
+  message('Seleziona la data di arrivo.');
+
+  renderCalendar();
+
+};
+
+$('guests').onchange=calculate;
+
+$('close').onclick=()=>{
+
+  $('lightbox').hidden=true;
+
+};
+
+$('lightbox').onclick=e=>{
+
+  if(e.target===$('lightbox')){
+
+    $('lightbox').hidden=true;
+
+  }
+
 };
 
 function addItem(container,text,css){
-  const el = document.createElement('div');
-  el.className = css;
-  el.textContent = text;
+
+  const el=document.createElement('div');
+
+  el.className=css;
+  el.textContent=text;
+
   container.append(el);
+
 }
 
 async function loadProperty(){
 
   if(!id){
-    $('status').textContent =
+
+    $('status').textContent=
       'Seleziona un alloggio dal catalogo.';
+
     return;
+
   }
 
-  const {data:a,error} = await db
+  const {data:a,error}=await db
     .from('alloggi')
-    .select('id,titolo,citta,tipologia,ospiti,prezzo_notte,descrizione,servizi,foto')
+    .select(
+      'id,titolo,citta,tipologia,ospiti,'+
+      'prezzo_notte,descrizione,servizi,foto'
+    )
     .eq('id',id)
     .eq('stato','approvato')
     .maybeSingle();
 
-  if(error) throw error;
+  if(error)throw error;
 
   if(!a){
-    $('status').textContent =
-      'Questo alloggio non è disponibile nel catalogo.';
+
+    $('status').textContent=
+      'Questo alloggio non è disponibile.';
+
     return;
+
   }
 
-  document.title = a.titolo + ' | STAYGO°';
+  document.title=a.titolo+' | STAYGO°';
 
-  $('title').textContent = a.titolo;
-  $('location').textContent = a.citta;
-  $('description').textContent = a.descrizione;
+  $('title').textContent=a.titolo;
+  $('location').textContent=a.citta;
+  $('description').textContent=a.descrizione;
 
-  nightlyPrice = Number(a.prezzo_notte);
+  nightlyPrice=Number(a.prezzo_notte);
 
-  $('price').textContent = money(nightlyPrice);
+  $('price').textContent=money(nightlyPrice);
 
   addItem($('features'),a.tipologia,'pill');
-  addItem($('features'),a.ospiti+' ospiti','pill');
+
+  addItem(
+    $('features'),
+    a.ospiti+' ospiti',
+    'pill'
+  );
 
   for(const service of a.servizi || []){
-    addItem($('services'),'✧ '+service,'service');
+
+    addItem(
+      $('services'),
+      '✧ '+service,
+      'service'
+    );
+
   }
 
   if(!$('services').children.length){
+
     addItem(
       $('services'),
       'Servizi non ancora specificati',
       'service'
     );
+
   }
 
   for(let i=1;i<=Number(a.ospiti);i++){
-    const option = document.createElement('option');
-    option.value = i;
-    option.textContent = i+' ospiti';
+
+    const option=document.createElement('option');
+
+    option.value=i;
+    option.textContent=i+' ospiti';
+
     $('guests').append(option);
+
   }
 
-  $('status').hidden = true;
-  $('property').hidden = false;
+  $('guests').value=Math.min(2,a.ospiti);
+
+  $('status').hidden=true;
+  $('property').hidden=false;
+
+  await loadCalendar();
+  await recoverHold();
 
   for(const path of (a.foto || []).slice(0,10)){
 
-    const {data,error} = await db.storage
+    const {data,error}=await db.storage
       .from('alloggi-foto')
       .createSignedUrl(path,120);
 
-    if(error || !data?.signedUrl) continue;
+    if(error || !data?.signedUrl)continue;
 
-    const img = document.createElement('img');
+    const img=document.createElement('img');
 
-    img.src = data.signedUrl;
-    img.alt = 'Fotografia di '+a.titolo;
+    img.src=data.signedUrl;
+    img.alt='Fotografia di '+a.titolo;
 
-    img.onclick = () => {
-      $('largePhoto').src = img.src;
-      $('lightbox').hidden = false;
+    img.onclick=()=>{
+
+      $('largePhoto').src=img.src;
+      $('lightbox').hidden=false;
+
     };
 
     $('gallery').append(img);
+
   }
 
-  const count = $('gallery').children.length;
+  const count=$('gallery').children.length;
 
-  $('photoCount').textContent =
+  $('photoCount').textContent=
     count+' fotografie · Scorri';
 
   if(!count){
-    $('hero').hidden = true;
+
+    $('hero').hidden=true;
+
   }
+
 }
 
 loadProperty().catch(e=>{
-  $('status').hidden = false;
-  $('status').textContent = 'Errore: '+e.message;
+
+  $('status').hidden=false;
+  $('status').textContent='Errore: '+e.message;
+
 });
+
 </script>
 
 </body>
