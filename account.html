@@ -5,147 +5,312 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14151A">
-<title>Profilo | STAYGO°</title>
+<title>My STAYGO | The Living Journey</title>
 <link rel="stylesheet" href="style.css">
 
 <style>
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+
 body{
   padding-bottom:110px;
+  background:#14151A;
 }
+
 .profile-header{
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
   padding:24px 5%;
-  border:0;
 }
+
 .profile-header .logo{
   font-size:34px;
 }
-.profile-main{
+
+.account-main{
   width:90%;
-  max-width:650px;
+  max-width:520px;
   margin:auto;
 }
-.profile-intro{
-  text-align:center;
-  padding:35px 0;
+
+.intro{
+  padding:30px 0;
 }
+
+.eyebrow{
+  color:#A6A8B2;
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+}
+
+h1{
+  font-size:43px;
+  line-height:1.06;
+  letter-spacing:-2px;
+  font-weight:500;
+  margin:20px 0;
+}
+
+h1 em{
+  color:#E6D9FF;
+  font-family:Georgia,serif;
+  font-weight:400;
+}
+
+h2{
+  font-size:30px;
+  letter-spacing:-1px;
+  font-weight:500;
+  margin:15px 0;
+}
+
+p{
+  color:#A6A8B2;
+  font-size:14px;
+  line-height:1.7;
+}
+
+.account-card{
+  padding:25px;
+  border:1px solid #FFFFFF12;
+  border-radius:28px;
+  background:#202127;
+}
+
+.account-card form{
+  display:grid;
+  gap:17px;
+}
+
+.account-card label{
+  display:block;
+  font-size:12px;
+  color:#C4C4CC;
+}
+
+.account-card input:not([type=checkbox]){
+  display:block;
+  width:100%;
+  margin-top:9px;
+  padding:17px;
+  border-radius:15px;
+  border:1px solid #FFFFFF15;
+  background:#17181D;
+  color:#F4F1EA;
+  font-size:16px;
+  outline:none;
+  color-scheme:dark;
+}
+
+.account-card input:focus{
+  border-color:#E6D9FF;
+}
+
+.account-card button,
+.account-card .outline{
+  width:100%;
+  text-align:center;
+}
+
+.primary{
+  border:0;
+  border-radius:50px;
+  background:#E6D9FF;
+  color:#14151A;
+  padding:18px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.secondary{
+  border:1px solid #FFFFFF25;
+  border-radius:50px;
+  padding:16px;
+  background:transparent;
+  color:#F4F1EA;
+  cursor:pointer;
+}
+
+.text-button{
+  border:0;
+  background:transparent;
+  color:#E6D9FF;
+  padding:10px;
+  cursor:pointer;
+  font-size:13px;
+}
+
+button:disabled{
+  opacity:.5;
+  cursor:wait;
+}
+
+.progress{
+  display:flex;
+  gap:6px;
+  margin-bottom:20px;
+}
+
+.progress span{
+  flex:1;
+  height:4px;
+  border-radius:10px;
+  background:#3B3C45;
+}
+
+.progress span.active{
+  background:#E6D9FF;
+}
+
+.step-fields{
+  display:grid;
+  gap:17px;
+}
+
+.check{
+  display:flex!important;
+  align-items:flex-start;
+  gap:12px;
+  line-height:1.6;
+}
+
+.check input{
+  flex-shrink:0;
+  width:19px;
+  height:19px;
+  accent-color:#E6D9FF;
+  margin-top:2px;
+}
+
+.shield{
+  border:1px solid #E6D9FF25;
+  background:#E6D9FF08;
+  border-radius:20px;
+  padding:20px;
+  margin:10px 0;
+}
+
+.shield-title{
+  color:#E6D9FF;
+  font-size:13px;
+  letter-spacing:2px;
+}
+
 .avatar{
-  width:100px;
-  height:100px;
-  margin:0 auto 25px;
+  width:85px;
+  height:85px;
   border-radius:50%;
   display:grid;
   place-items:center;
-  background:linear-gradient(145deg,#383343,#202127);
+  color:#E6D9FF;
+  background:linear-gradient(145deg,#40364E,#202127);
   border:1px solid #E6D9FF40;
-  box-shadow:0 0 40px #E6D9FF12;
-  color:var(--moon);
+  margin-bottom:20px;
 }
+
 .avatar svg{
-  width:45px;
-  height:45px;
+  width:36px;
+  height:36px;
   fill:none;
   stroke:currentColor;
   stroke-width:1.2;
 }
-.profile-intro h1{
-  font-size:42px;
-  font-weight:500;
-  letter-spacing:-2px;
+
+.profile-detail{
+  padding:16px 0;
+  border-bottom:1px solid #FFFFFF12;
 }
-.profile-intro h1 em{
-  font-family:Georgia,serif;
-  color:var(--moon);
-  font-weight:400;
-}
-.profile-intro p{
-  font-size:14px;
-}
-.account-panel{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:28px;
-  padding:25px;
-}
-#accountForm{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:18px;
-}
-#accountForm button{
-  width:100%;
-}
-#accountMessage{
-  font-size:14px;
-  overflow-wrap:anywhere;
-}
-#accountLinks{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-#accountLinks a,
-#accountLinks button{
-  width:100%;
-  text-align:center;
-}
-.profile-menu{
-  margin-top:25px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:26px;
-  overflow:hidden;
-}
-.menu-item{
-  display:flex;
-  align-items:center;
-  gap:16px;
-  padding:22px;
-  border-bottom:1px solid var(--border);
-}
-.menu-item:last-child{
-  border-bottom:0;
-}
-.menu-icon{
-  width:42px;
-  height:42px;
-  border-radius:14px;
-  background:#E6D9FF10;
-  color:var(--moon);
-  display:grid;
-  place-items:center;
-}
-.menu-icon svg{
-  width:22px;
-  height:22px;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:1.5;
-}
-.menu-text{
-  flex:1;
-}
-.menu-text strong{
-  display:block;
-  font-size:15px;
-  font-weight:500;
-}
-.menu-text small{
+
+.profile-detail small{
   display:block;
   font-size:11px;
-  color:var(--muted);
-  margin-top:6px;
+  color:#A6A8B2;
+  margin-bottom:6px;
 }
-.arrow{
-  color:var(--muted);
+
+.profile-detail strong{
+  font-weight:500;
+  font-size:15px;
+  overflow-wrap:anywhere;
 }
-.profile-footer{
-  text-align:center;
+
+.verification{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 0;
+  font-size:13px;
+}
+
+.verification span:first-child{
+  color:#E6D9FF;
+}
+
+.profile-actions{
+  display:grid;
+  gap:12px;
+  margin-top:25px;
+}
+
+#accountMessage{
+  font-size:13px;
+  overflow-wrap:anywhere;
+  padding:5px;
+}
+
+.menu{
+  margin-top:25px;
+  background:#202127;
+  border:1px solid #FFFFFF12;
+  border-radius:25px;
+  overflow:hidden;
+}
+
+.menu a{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  padding:21px;
+  border-bottom:1px solid #FFFFFF12;
+  color:#F4F1EA;
+  text-decoration:none;
+}
+
+.menu a:last-child{
+  border-bottom:0;
+}
+
+.menu-symbol{
+  color:#E6D9FF;
+  font-size:24px;
+  width:30px;
+}
+
+.menu-copy{
+  flex:1;
+}
+
+.menu-copy strong{
+  font-size:14px;
+  font-weight:500;
+}
+
+.menu-copy small{
+  display:block;
+  color:#A6A8B2;
+  font-size:11px;
+  margin-top:5px;
+}
+
+footer{
   padding:35px 0;
+  text-align:center;
 }
-.profile-footer p{
+
+footer p{
   font-size:11px;
 }
 </style>
@@ -160,9 +325,385 @@ body{
   <span class="eyebrow">MY STAYGO</span>
 </header>
 
-<main class="profile-main">
+<main class="account-main">
 
-  <section class="profile-intro">
+<!-- LOGIN -->
+
+<section id="loginView" hidden>
+
+  <div class="intro">
+
+    <div class="eyebrow">
+      YOUR PERSONAL SPACE
+    </div>
+
+    <h1>
+      Il tuo mondo.<br>
+      <em>Il tuo viaggio.</em>
+    </h1>
+
+    <p>
+      Ritrova i tuoi luoghi, le tue esperienze
+      e tutto ciò che ti fa sentire a casa.
+    </p>
+
+  </div>
+
+  <div class="account-card">
+
+    <form id="loginForm">
+
+      <label>
+        Indirizzo email
+        <input id="loginEmail"
+          type="email"
+          autocomplete="email"
+          placeholder="La tua email"
+          required>
+      </label>
+
+      <label>
+        Password
+        <input id="loginPassword"
+          type="password"
+          autocomplete="current-password"
+          placeholder="La tua password"
+          required>
+      </label>
+
+      <button class="primary" type="submit">
+        Accedi a STAYGO ↗
+      </button>
+
+      <button class="text-button"
+        type="button"
+        onclick="resetPassword()">
+        Hai dimenticato la password?
+      </button>
+
+      <button class="secondary"
+        type="button"
+        onclick="showRegister()">
+        Crea il tuo account
+      </button>
+
+    </form>
+
+  </div>
+
+</section>
+
+<!-- REGISTRAZIONE -->
+
+<section id="registerView" hidden>
+
+  <div class="intro">
+    <div class="eyebrow">
+      YOUR JOURNEY STARTS HERE
+    </div>
+    <h1>
+      Un nuovo<br>
+      <em>inizio.</em>
+    </h1>
+  </div>
+
+  <div class="account-card">
+
+    <div class="progress">
+      <span data-progress="1"></span>
+      <span data-progress="2"></span>
+      <span data-progress="3"></span>
+    </div>
+
+    <div class="eyebrow">
+      STEP <span id="stepNumber">01 / 03</span>
+    </div>
+
+    <form id="registerForm" novalidate>
+
+      <!-- STEP 1 -->
+
+      <div data-step="1" class="step-fields">
+
+        <h2>Il viaggio inizia da te.</h2>
+
+        <p>Cominciamo dalla tua identità.</p>
+
+        <label>
+          Nome
+          <input id="regNome"
+            autocomplete="given-name"
+            maxlength="100"
+            placeholder="Il tuo nome"
+            required>
+        </label>
+
+        <label>
+          Cognome
+          <input id="regCognome"
+            autocomplete="family-name"
+            maxlength="100"
+            placeholder="Il tuo cognome"
+            required>
+        </label>
+
+        <label>
+          Data di nascita
+          <input id="regNascita"
+            type="date"
+            autocomplete="bday"
+            required>
+        </label>
+
+        <label>
+          Paese di residenza
+          <input id="regPaese"
+            autocomplete="country-name"
+            maxlength="100"
+            placeholder="Italia"
+            required>
+        </label>
+
+        <p>
+          Per utilizzare STAYGO devi avere
+          almeno 18 anni.
+        </p>
+
+        <button type="submit" class="primary">
+          Continua →
+        </button>
+
+      </div>
+
+      <!-- STEP 2 -->
+
+      <div data-step="2"
+        class="step-fields" hidden>
+
+        <h2>Restiamo in contatto.</h2>
+
+        <p>Il tuo accesso al mondo STAYGO.</p>
+
+        <label>
+          Indirizzo email
+          <input id="regEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="La tua email"
+            required>
+        </label>
+
+        <label>
+          Numero di telefono
+          <input id="regTelefono"
+            type="tel"
+            autocomplete="tel"
+            placeholder="+39 333 1234567"
+            required>
+        </label>
+
+        <label>
+          Password
+          <input id="regPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="12"
+            placeholder="Almeno 12 caratteri"
+            required>
+        </label>
+
+        <label>
+          Conferma password
+          <input id="regConfirm"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Ripeti la password"
+            required>
+        </label>
+
+        <button type="submit" class="primary">
+          Continua →
+        </button>
+
+        <button type="button"
+          class="text-button"
+          onclick="previousStep()">
+          ← Indietro
+        </button>
+
+      </div>
+
+      <!-- STEP 3 -->
+
+      <div data-step="3"
+        class="step-fields" hidden>
+
+        <h2>Il mondo ti aspetta.</h2>
+
+        <div class="shield">
+          <div class="shield-title">
+            ◇ STAYGO SHIELD
+          </div>
+          <p>
+            Un progetto costruito intorno
+            alla sicurezza, alla privacy
+            e alla fiducia reciproca.
+          </p>
+        </div>
+
+        <p>
+          Ambiente di prova: nessun pagamento
+          o soggiorno reale. Le condizioni
+          definitive saranno pubblicate
+          prima del lancio.
+        </p>
+
+        <label class="check">
+          <input id="regTerms" type="checkbox">
+          Accetto di partecipare al test
+          dimostrativo di STAYGO.
+        </label>
+
+        <label class="check">
+          <input id="regPrivacy" type="checkbox">
+          Prendo atto che i dati inseriti
+          saranno salvati per la gestione
+          del mio account di prova.
+        </label>
+
+        <label class="check">
+          <input id="regAdult" type="checkbox">
+          Confermo di avere almeno 18 anni.
+        </label>
+
+        <button type="submit" class="primary">
+          Crea il tuo account ↗
+        </button>
+
+        <button type="button"
+          class="text-button"
+          onclick="previousStep()">
+          ← Indietro
+        </button>
+
+      </div>
+
+      <button type="button"
+        class="text-button"
+        onclick="showLogin()">
+        Hai già un account? Accedi
+      </button>
+
+    </form>
+
+  </div>
+
+</section>
+
+<!-- COMPLETAMENTO PROFILO -->
+
+<section id="completeView" hidden>
+
+  <div class="intro">
+
+    <div class="eyebrow">
+      STAYGO IDENTITY
+    </div>
+
+    <h1>
+      La tua<br>
+      <em>identità.</em>
+    </h1>
+
+    <p>
+      Completa o aggiorna i tuoi dati personali.
+    </p>
+
+  </div>
+
+  <div class="account-card">
+
+    <form id="completeForm">
+
+      <label>
+        Nome
+        <input id="editNome"
+          maxlength="100"
+          autocomplete="given-name"
+          required>
+      </label>
+
+      <label>
+        Cognome
+        <input id="editCognome"
+          maxlength="100"
+          autocomplete="family-name"
+          required>
+      </label>
+
+      <label>
+        Data di nascita
+        <input id="editNascita"
+          type="date"
+          required>
+      </label>
+
+      <label>
+        Paese di residenza
+        <input id="editPaese"
+          maxlength="100"
+          required>
+      </label>
+
+      <label>
+        Telefono
+        <input id="editTelefono"
+          type="tel"
+          placeholder="+39"
+          required>
+      </label>
+
+      <label class="check">
+        <input id="editTerms"
+          type="checkbox" required>
+        Accetto di partecipare al test
+        dimostrativo di STAYGO.
+      </label>
+
+      <label class="check">
+        <input id="editPrivacy"
+          type="checkbox" required>
+        Prendo atto del salvataggio dei dati
+        per la gestione dell'account di prova.
+      </label>
+
+      <button type="submit" class="primary">
+        Salva il mio profilo ↗
+      </button>
+
+      <button type="button"
+        class="text-button"
+        onclick="initAccount().catch(e=>message(e.message,true))">
+        ← Torna al profilo
+      </button>
+
+      <button type="button"
+        class="secondary"
+        onclick="logout()">
+        Esci
+      </button>
+
+    </form>
+
+  </div>
+
+</section>
+
+<!-- PROFILO PERSONALE -->
+
+<section id="profileView" hidden>
+
+  <div class="intro">
 
     <div class="avatar">
       <svg viewBox="0 0 24 24">
@@ -172,156 +713,157 @@ body{
     </div>
 
     <div class="eyebrow">
-      Your personal space
+      YOUR STAYGO IDENTITY
     </div>
 
-    <h1>
-      Il tuo mondo.<br>
-      <em>Il tuo viaggio.</em>
-    </h1>
+    <h1 id="profileName"></h1>
 
-    <p>
-      Ogni esperienza comincia da te.
-      Accedi al tuo spazio personale STAYGO.
-    </p>
+    <p>Il mondo è ancora tutto da scoprire.</p>
 
-  </section>
+  </div>
 
-  <section class="account-panel">
-
-    <form id="accountForm" hidden class="form">
-
-      <label>
-        Indirizzo email
-        <input
-          type="email"
-          name="email"
-          autocomplete="email"
-          placeholder="La tua email"
-          required>
-      </label>
-
-      <label>
-        Password
-        <input
-          type="password"
-          name="password"
-          minlength="8"
-          placeholder="La tua password"
-          required>
-      </label>
-
-      <button class="cta"
-        name="action"
-        value="login">
-        Accedi a STAYGO ↗
-      </button>
-
-      <button class="outline"
-        name="action"
-        value="signup">
-        Crea il tuo account
-      </button>
-
-    </form>
-
-    <p id="accountMessage"
-      aria-live="polite">
-    </p>
-
-    <div id="accountLinks"
-      class="actions">
-    </div>
-
-  </section>
-
-  <section class="profile-menu">
-
-    <a class="menu-item" href="alloggi.html">
-
-      <div class="menu-icon">
-        <svg viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M16 8l-3 5-5 3 3-5z"/>
-        </svg>
-      </div>
-
-      <div class="menu-text">
-        <strong>Esplora il mondo</strong>
-        <small>Scopri il tuo prossimo soggiorno</small>
-      </div>
-
-      <span class="arrow">↗</span>
-
-    </a>
-
-    <a class="menu-item" href="ai.html">
-
-      <div class="menu-icon">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>
-        </svg>
-      </div>
-
-      <div class="menu-text">
-        <strong>STAYGO Intelligence</strong>
-        <small>Immagina il tuo prossimo viaggio</small>
-      </div>
-
-      <span class="arrow">↗</span>
-
-    </a>
-
-    <a class="menu-item" href="host.html">
-
-      <div class="menu-icon">
-        <svg viewBox="0 0 24 24">
-          <rect x="3" y="3" width="18" height="18" rx="5"/>
-          <path d="M12 7v10M7 12h10"/>
-        </svg>
-      </div>
-
-      <div class="menu-text">
-        <strong>Diventa Host</strong>
-        <small>Condividi il tuo spazio con il mondo</small>
-      </div>
-
-      <span class="arrow">↗</span>
-
-    </a>
-
-    <a class="menu-item" href="annunci.html">
-
-      <div class="menu-icon">
-        <svg viewBox="0 0 24 24">
-          <rect x="4" y="3" width="16" height="18" rx="3"/>
-          <path d="M8 8h8M8 12h8M8 16h5"/>
-        </svg>
-      </div>
-
-      <div class="menu-text">
-        <strong>I miei annunci</strong>
-        <small>Gestisci le tue proprietà</small>
-      </div>
-
-      <span class="arrow">↗</span>
-
-    </a>
-
-  </section>
-
-  <footer class="profile-footer">
+  <div class="account-card">
 
     <div class="eyebrow">
-      STAYGO° — The Living Journey
+      PERSONAL INFORMATION
+    </div>
+
+    <div class="profile-detail">
+      <small>Indirizzo email</small>
+      <strong id="profileEmail"></strong>
+    </div>
+
+    <div class="profile-detail">
+      <small>Numero di telefono</small>
+      <strong id="profilePhone"></strong>
+    </div>
+
+    <div class="profile-detail">
+      <small>Paese di residenza</small>
+      <strong id="profileCountry"></strong>
+    </div>
+
+    <div class="profile-detail">
+      <small>Data di nascita</small>
+      <strong id="profileBirth"></strong>
+    </div>
+
+    <div class="profile-actions">
+
+      <button class="secondary"
+        onclick="openEdit()">
+        Modifica i miei dati
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="shield" style="margin-top:20px">
+
+    <div class="shield-title">
+      ◇ STAYGO SHIELD
+    </div>
+
+    <h2>La tua sicurezza.</h2>
+
+    <div class="verification">
+      <span>◎</span>
+      <span id="emailStatus"></span>
+    </div>
+
+    <div class="verification">
+      <span>◎</span>
+      <span id="phoneStatus"></span>
+    </div>
+
+    <div class="verification">
+      <span>◎</span>
+      <span id="identityStatus"></span>
     </div>
 
     <p>
-      Prototipo dimostrativo.
-      Nessuna prenotazione reale.
+      La verifica telefonica e documentale
+      sarà disponibile prossimamente.
     </p>
 
-  </footer>
+  </div>
+
+  <div class="profile-actions">
+
+    <a id="adminLink"
+      class="outline"
+      href="control.html" hidden>
+      STAYGO Mission Control ↗
+    </a>
+
+    <a class="outline" href="annunci.html">
+      La mia Host Collection ↗
+    </a>
+
+    <button class="secondary"
+      onclick="logout()">
+      Esci dal tuo account
+    </button>
+
+  </div>
+
+</section>
+
+<p id="accountMessage"
+  role="status"
+  aria-live="polite">
+  Connessione a STAYGO...
+</p>
+
+<!-- MENU -->
+
+<section class="menu">
+
+  <a href="alloggi.html">
+    <span class="menu-symbol">◎</span>
+    <div class="menu-copy">
+      <strong>Esplora il mondo</strong>
+      <small>Scopri il tuo prossimo soggiorno</small>
+    </div>
+    <span>↗</span>
+  </a>
+
+  <a href="ai.html">
+    <span class="menu-symbol">✧</span>
+    <div class="menu-copy">
+      <strong>STAYGO Intelligence</strong>
+      <small>Immagina il tuo prossimo viaggio</small>
+    </div>
+    <span>↗</span>
+  </a>
+
+  <a href="host.html">
+    <span class="menu-symbol">⊕</span>
+    <div class="menu-copy">
+      <strong>Diventa Host</strong>
+      <small>Condividi il tuo spazio</small>
+    </div>
+    <span>↗</span>
+  </a>
+
+  <a href="annunci.html">
+    <span class="menu-symbol">◇</span>
+    <div class="menu-copy">
+      <strong>Host Collection</strong>
+      <small>Gestisci le tue proprietà</small>
+    </div>
+    <span>↗</span>
+  </a>
+
+</section>
+
+<footer>
+  <div class="eyebrow">
+    STAYGO° — THE LIVING JOURNEY
+  </div>
+  <p>Prototipo dimostrativo. Nessuna prenotazione reale.</p>
+</footer>
 
 </main>
 
@@ -372,7 +914,7 @@ body{
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js"></script>
+<script src="account.js"></script>
 
 </body>
 </html>
