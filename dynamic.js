@@ -65,7 +65,7 @@
       generator: "search",
       gsrsearch: destination + " filetype:bitmap",
       gsrnamespace: "6",
-      gsrlimit: "30",
+      gsrlimit: "50",
       prop: "imageinfo",
       iiprop: "url|extmetadata|size|mime",
       iiurlwidth: "1600",
