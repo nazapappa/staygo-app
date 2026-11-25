@@ -19,10 +19,11 @@ function message(text, error = false) {
 
 function show(id) {
   for (const name of [
-    'loginView',
-    'registerView',
-    'profileView',
-    'completeView'
+   'loginView',
+'registerView',
+'profileView',
+'completeView',
+'verifyView'
   ]) {
     $(name).hidden = name !== id;
   }
@@ -269,12 +270,19 @@ async function register() {
       await acceptTerms();
       await initAccount();
     } else {
-      $('registerForm').reset();
-      showLogin();
+    const email = $('regEmail').value.trim();
 
-      message(
-        'Controlla la tua email. Dopo la conferma potrai accedere e completare il profilo.'
-      );
+$('registerForm').reset();
+
+$('verificationEmail').textContent = email;
+$('loginEmail').value = email;
+
+show('verifyView');
+
+$('resendButton').disabled = true;
+
+$('resendCountdown').textContent =
+  'Reinvio temporaneamente non disponibile.';
     }
   });
 }
