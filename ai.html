@@ -160,7 +160,7 @@ body{
   <a class="logo" href="index.html">
     staygo<span>°</span>
   </a>
-  <span class="ai-status">INTELLIGENCE / DEMO</span>
+<span class="ai-status">STAYGO INTELLIGENCE</span>
 </header>
 
 <main class="ai-main">
@@ -219,8 +219,7 @@ body{
     </textarea>
 
     <div class="composer-bottom">
-      <small>STAYGO Intelligence · Anteprima</small>
-
+      <small>STAYGO Intelligence · Your Travel AI</small>
       <button class="send"
         type="submit"
         aria-label="Invia messaggio">
@@ -230,10 +229,11 @@ body{
 
   </form>
 
-  <p class="ai-notice">
-    Assistente dimostrativo.
-    Non ancora collegato a un modello AI reale.
-  </p>
+<p class="ai-notice">
+    Powered by Gemini · Designed for travel.
+    Le informazioni e i prezzi devono essere
+    verificati prima della prenotazione.
+</p>
 
 </main>
 
@@ -283,21 +283,70 @@ body{
 
 </nav>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+const db = supabase.createClient(
+  "https://zjfcnojzstlwzxeldaqn.supabase.co",
+  "sb_publishable_7PH45XJmmxUiZfobZQS6SA_1rtHRZ72"
+);
+
 const prompt = document.getElementById('prompt');
 const conversation =
   document.getElementById('conversation');
 
+const form = document.getElementById('chatForm');
+const send = form.querySelector('.send');
+
+let busy = false;
+
 function addMessage(text,type){
   const message = document.createElement('div');
+
   message.className = 'message '+type;
   message.textContent = text;
+
   conversation.appendChild(message);
+
+  message.scrollIntoView({
+    behavior:'smooth',
+    block:'nearest'
+  });
+
+  return message;
+}
+
+function setBusy(value){
+  busy = value;
+  send.disabled = value;
+  prompt.disabled = value;
+  send.textContent = value ? '···' : '↑';
+
+  document.querySelectorAll('.suggestion')
+  .forEach(button=>{
+    button.disabled = value;
+  });
+}
+
+function showLogin(){
+  addMessage(
+    'Accedi gratuitamente al tuo account STAYGO per organizzare il tuo prossimo viaggio.',
+    'ai-message'
+  );
+
+  const link = document.createElement('a');
+  link.className = 'outline';
+  link.href = 'account.html';
+  link.textContent = 'Accedi a STAYGO ↗';
+
+  conversation.appendChild(link);
 }
 
 document.querySelectorAll('.suggestion')
 .forEach(button=>{
   button.onclick=()=>{
+    if(busy)return;
     prompt.value=button.textContent.trim();
     prompt.focus();
   };
@@ -306,7 +355,7 @@ document.querySelectorAll('.suggestion')
 const dream=sessionStorage.getItem('staygoDream');
 
 if(dream){
-  prompt.value=dream;
+  prompt.value=dream.slice(0,2000);
   sessionStorage.removeItem('staygoDream');
 }
 
@@ -325,37 +374,120 @@ if(!dream && mood && moods[mood]){
   prompt.value=moods[mood];
 }
 
-document.getElementById('chatForm')
-.onsubmit=e=>{
+form.onsubmit=async e=>{
   e.preventDefault();
 
+  if(busy)return;
+
   const text=prompt.value.trim();
-  if(!text)return;
 
-  addMessage(text,'user-message');
-  prompt.value='';
+  if(!text || text.length>2000)return;
 
-  addMessage(
-    'Questa è un’anteprima di STAYGO Intelligence.\n\n'+
-    'Nella versione completa potrò elaborare il tuo viaggio, '+
-    'confrontare destinazioni, alloggi, trasporti, esperienze '+
-    'e organizzare il tuo itinerario in base al budget.\n\n'+
-    'Nel frattempo puoi esplorare gli alloggi pubblicati.',
-    'ai-message'
-  );
+  setBusy(true);
 
-  const link=document.createElement('a');
-  link.className='outline';
-  link.href='alloggi.html';
-  link.textContent='Esplora gli alloggi ↗';
-  conversation.appendChild(link);
+  let loading=null;
 
-  conversation.lastElementChild.scrollIntoView({
-    behavior:'smooth',
-    block:'center'
-  });
+  try{
+
+    const {data,error} =
+      await db.auth.getSession();
+
+    if(error || !data.session){
+
+      sessionStorage.setItem(
+        'staygoDream',text
+      );
+
+      showLogin();
+      return;
+    }
+
+    addMessage(text,'user-message');
+
+    prompt.value='';
+
+    loading=addMessage(
+      '✦ Sto immaginando il tuo prossimo viaggio...',
+      'ai-message'
+    );
+
+    loading.style.opacity='0.65';
+
+    const response=await fetch(
+      '/api/intelligence',
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':
+            'Bearer '+data.session.access_token
+        },
+        body:JSON.stringify({
+          message:text
+        }),
+        signal:AbortSignal.timeout(60000)
+      }
+    );
+
+    const result=await response.json();
+
+    if(!response.ok){
+
+      if(response.status===401){
+        loading.remove();
+        loading=null;
+
+        sessionStorage.setItem(
+          'staygoDream',text
+        );
+
+        showLogin();
+        prompt.value=text;
+        return;
+      }
+
+      throw new Error(
+        result.error ||
+        'Intelligence temporaneamente non disponibile.'
+      );
+    }
+
+    if(typeof result.answer!=='string' ||
+       !result.answer.trim()){
+      throw new Error(
+        'Non ho ricevuto una risposta. Riprova.'
+      );
+    }
+
+    loading.textContent=result.answer;
+    loading.style.opacity='1';
+
+    loading.scrollIntoView({
+      behavior:'smooth',
+      block:'start'
+    });
+
+  }catch(error){
+
+    if(loading){
+      loading.remove();
+    }
+
+    const message =
+      error.name==='TimeoutError'
+      ? 'La richiesta sta impiegando troppo tempo. Riprova tra poco.'
+      : 'Non riesco a completare la richiesta in questo momento. Riprova tra poco.';
+
+    addMessage(message,'ai-message');
+
+    prompt.value=text;
+
+  }finally{
+
+    setBusy(false);
+
+  }
 };
 </script>
-
 </body>
 </html>
