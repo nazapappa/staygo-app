@@ -421,7 +421,68 @@ async function initAccount() {
 
   currentProfile = result.data;
 
-  if (!profileComplete(currentProfile)) {
+// STAYGO SMART REGISTRATION
+
+const pending =
+  currentUser.user_metadata?.staygo_registration;
+
+if (
+  currentUser.email_confirmed_at &&
+  pending &&
+  !profileComplete(currentProfile) &&
+  pending.versione === 'bozza-1.0' &&
+  pending.termini === true &&
+  pending.privacy === true &&
+  pending.maggiorenne === true
+) {
+
+  try {
+
+    await saveProfile({
+      nome: pending.nome,
+      cognome: pending.cognome,
+      data_nascita: pending.data_nascita,
+      paese_residenza: pending.paese_residenza,
+      telefono: pending.telefono
+    });
+
+    await acceptTerms();
+
+    const refreshed = await db
+      .from('profili')
+      .select('*')
+      .eq('id', currentUser.id)
+      .single();
+
+    if (refreshed.error) {
+      throw refreshed.error;
+    }
+
+    currentProfile = refreshed.data;
+
+  } catch (error) {
+
+    console.warn(
+      'STAYGO: completamento automatico non riuscito'
+    );
+
+  }
+}
+
+if (pending && profileComplete(currentProfile)) {
+
+  const cleanup = await db.auth.updateUser({
+    data: {
+      staygo_registration: null
+    }
+  });
+
+  if (!cleanup.error) {
+    currentUser = cleanup.data.user;
+  }
+}
+
+if (!profileComplete(currentProfile)) {
     openEdit();
     message('Completa il tuo profilo STAYGO.');
     return;
