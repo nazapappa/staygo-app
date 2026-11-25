@@ -300,7 +300,7 @@ const form = document.getElementById('chatForm');
 const send = form.querySelector('.send');
 
 let busy = false;
-
+const travelHistory = [];
 function addMessage(text,type){
   const message = document.createElement('div');
 
@@ -423,8 +423,9 @@ form.onsubmit=async e=>{
             'Bearer '+data.session.access_token
         },
         body:JSON.stringify({
-          message:text
-        }),
+  message:text,
+  history:travelHistory.slice(-8)
+}),
         signal:AbortSignal.timeout(60000)
       }
     );
@@ -458,7 +459,16 @@ form.onsubmit=async e=>{
         'Non ho ricevuto una risposta. Riprova.'
       );
     }
+travelHistory.push(
+  {role:'user',text:text},
+  {role:'model',text:result.answer}
+);
 
+if(travelHistory.length>8){
+  travelHistory.splice(
+    0,travelHistory.length-8
+  );
+}
     loading.textContent=result.answer;
     loading.style.opacity='1';
 
