@@ -177,9 +177,17 @@ module.exports = async function handler(req, res) {
     );
 
     if (!response.ok) {
-      throw new Error("GEMINI_ERROR");
-    }
+  const details = await response.json()
+    .catch(() => ({}));
 
+  console.error("GEMINI_API_ERROR", {
+    httpStatus: response.status,
+    code: details.error?.code,
+    status: details.error?.status
+  });
+
+  throw new Error("GEMINI_ERROR");
+}
     const data = await response.json();
 
     const answer = (
@@ -233,6 +241,12 @@ module.exports = async function handler(req, res) {
     });
 
   } catch (error) {
+    console.error("STAYGO_AI_ERROR", {
+  name: error.name,
+  type: error.message === "GEMINI_ERROR"
+    ? "GEMINI_ERROR"
+    : "BACKEND_ERROR"
+});
     if (reservation) {
       try {
         await rpc("staygo_ai_finalizza", {
