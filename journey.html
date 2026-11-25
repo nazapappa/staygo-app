@@ -601,7 +601,17 @@ function render(){
     return `
       <article class="trip-card">
 
-        <div class="trip-cover">◇</div>
+<div class="trip-cover" style="position:relative;overflow:hidden;">
+  ◇
+  ${b.coverUrl ? `
+    <img
+      src="${escapeHTML(b.coverUrl)}"
+      alt="${escapeHTML(stay.titolo || 'Alloggio')}"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
+      onerror="this.remove()"
+    >
+  ` : ''}
+</div>
 
         <div class="trip-content">
 
