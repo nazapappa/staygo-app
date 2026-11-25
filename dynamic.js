@@ -1,38 +1,7 @@
 
-/* STAYGO DYNAMIC ENGINE 1.0 */
+/* STAYGO DYNAMIC ENGINE 2.0 */
 
 (async function () {
-
-  const cover = document.getElementById("dynamicCover");
-
-  if (!cover) return;
-
-  const seasons = {
-    winter: [
-      "Dolomites winter snow",
-      "Swiss Alps winter",
-      "Norway snowy mountains",
-      "Lapland winter landscape"
-    ],
-    spring: [
-      "Tuscany landscape",
-      "Japan cherry blossoms",
-      "Madeira landscape",
-      "Amsterdam spring"
-    ],
-    summer: [
-      "Amalfi Coast",
-      "Sardinia beaches",
-      "Greek islands landscape",
-      "Mallorca coast"
-    ],
-    autumn: [
-      "Scotland Highlands autumn",
-      "Canadian Rockies autumn",
-      "Dolomites autumn",
-      "Bavaria autumn landscape"
-    ]
-  };
 
   const now = new Date();
   const month = now.getMonth() + 1;
@@ -42,23 +11,85 @@
     now.getDate()
   ) / 86400000);
 
+  const seasons = {
+    winter: [
+      "Dolomites snowy mountains",
+      "Swiss Alps winter landscape",
+      "Norway winter fjord",
+      "Lapland snowy landscape"
+    ],
+    spring: [
+      "Tuscany hills spring",
+      "Japan cherry blossoms landscape",
+      "Madeira coastal landscape",
+      "Provence spring landscape"
+    ],
+    summer: [
+      "Amalfi Coast panorama",
+      "Sardinia turquoise sea",
+      "Santorini landscape",
+      "Mallorca coastline"
+    ],
+    autumn: [
+      "Dolomites autumn landscape",
+      "Scotland Highlands landscape",
+      "Canadian Rockies autumn lake",
+      "Bavaria autumn mountains"
+    ]
+  };
+
+  const moods = {
+    liberta: [
+      "Pacific Coast scenic landscape",
+      "Iceland open landscape",
+      "Portugal ocean cliffs",
+      "Norway fjord panorama"
+    ],
+    romanticismo: [
+      "Venice Grand Canal sunset",
+      "Paris sunset cityscape",
+      "Santorini sunset",
+      "Lake Como landscape"
+    ],
+    avventura: [
+      "Dolomites mountain peaks",
+      "Patagonia mountains",
+      "Iceland waterfalls",
+      "Swiss Alps landscape"
+    ],
+    esclusivita: [
+      "Monaco panoramic coastline",
+      "Capri coastal landscape",
+      "French Riviera panorama",
+      "Lake Como historic villas landscape"
+    ],
+    relax: [
+      "Maldives tropical beach",
+      "Seychelles beach landscape",
+      "Bali rice terraces",
+      "Sardinia turquoise beach"
+    ]
+  };
+
   const season =
     month === 12 || month <= 2 ? "winter" :
     month <= 5 ? "spring" :
     month <= 8 ? "summer" : "autumn";
 
-  const destinations = seasons[season];
-  const destination =
-    destinations[day % destinations.length];
-
   const clean = value => {
     const doc = new DOMParser().parseFromString(
       value || "", "text/html"
     );
+
     return doc.body.textContent.trim();
   };
 
-  try {
+  const usedPhotos = new Set();
+
+  async function loadPhoto(queries, offset) {
+
+    const destination =
+      queries[(day + offset) % queries.length];
 
     const params = new URLSearchParams({
       action: "query",
@@ -78,95 +109,215 @@
       params.toString()
     );
 
-    if (!response.ok) return;
+    if (!response.ok) return null;
 
     const data = await response.json();
 
     const photos = Object.values(
       data.query?.pages || {}
-    ).map(page => page.imageinfo?.[0])
-     .filter(info => {
-       if (!info) return false;
+    )
+    .map(page => page.imageinfo?.[0])
+    .filter(info => {
 
-       const meta = info.extmetadata || {};
-       const license = meta.LicenseShortName?.value || "";
-       const licenseUrl = meta.LicenseUrl?.value || "";
+      if (!info) return false;
 
-       return (
-         ["CC BY 4.0", "CC BY-SA 4.0", "CC0"]
-           .includes(license) &&
-         licenseUrl.startsWith("https://creativecommons.org/") &&
-         info.mime === "image/jpeg" &&
-         info.width >= 2400 &&
-info.height >= 1400 &&
-info.width / info.height >= 1.3 &&
-info.width / info.height <= 2.2 &&
-         info.thumburl &&
-         info.descriptionurl &&
-         clean(meta.Artist?.value) &&
-         !meta.Restrictions?.value
-       );
-     });
+      const meta = info.extmetadata || {};
 
-    if (!photos.length) return;
+      const license =
+        meta.LicenseShortName?.value || "";
+
+      const licenseUrl =
+        meta.LicenseUrl?.value || "";
+
+      return (
+        ["CC BY 4.0", "CC BY-SA 4.0", "CC0"]
+          .includes(license) &&
+        licenseUrl.startsWith(
+          "https://creativecommons.org/"
+        ) &&
+        info.mime === "image/jpeg" &&
+        info.width >= 2400 &&
+        info.height >= 1400 &&
+        info.width / info.height >= 1.3 &&
+        info.width / info.height <= 2.2 &&
+        info.thumburl &&
+        info.descriptionurl &&
+        clean(meta.Artist?.value) &&
+        !meta.Restrictions?.value &&
+        !usedPhotos.has(info.descriptionurl)
+      );
+
+    });
+
+    if (!photos.length) return null;
 
     photos.sort((a, b) =>
       a.descriptionurl.localeCompare(b.descriptionurl)
     );
 
-    const photo = photos[day % photos.length];
+    const photo =
+      photos[(day + offset) % photos.length];
+
+    usedPhotos.add(photo.descriptionurl);
+
+    return { photo, destination };
+
+  }
+
+  function createCredit(photo) {
+
     const meta = photo.extmetadata;
 
-    const preview = new Image();
+    const credit = document.createElement("div");
 
-    preview.onload = () => {
+    credit.style.cssText =
+      "font-size:10px;padding:7px 4px;" +
+      "color:#A6A8B2;line-height:1.5;";
 
-      const credit = document.createElement("div");
+    const source = document.createElement("a");
 
-      credit.style.cssText =
-        "font-size:10px;padding:8px 12px;" +
-        "background:#14151A;color:#A6A8B2;" +
-        "line-height:1.5;";
+    source.href = photo.descriptionurl;
+    source.target = "_blank";
+    source.rel = "noopener noreferrer";
+    source.style.color = "#E6D9FF";
 
-      const source = document.createElement("a");
-      source.href = photo.descriptionurl;
-      source.target = "_blank";
-      source.rel = "noopener noreferrer";
-      source.style.color = "#E6D9FF";
-      source.textContent =
-        clean(meta.ObjectName?.value) ||
-        "Fotografia originale";
+    source.textContent =
+      clean(meta.ObjectName?.value) ||
+      "Fotografia originale";
 
-      const license = document.createElement("a");
-      license.href = meta.LicenseUrl.value;
-      license.target = "_blank";
-      license.rel = "noopener noreferrer";
-      license.style.color = "#E6D9FF";
-      license.textContent = meta.LicenseShortName.value;
+    const license = document.createElement("a");
 
-      credit.append(
-        source,
-        " — " + clean(meta.Artist.value) + " · ",
-        license,
-        " · Wikimedia Commons · Immagine ritagliata"
+    license.href = meta.LicenseUrl.value;
+    license.target = "_blank";
+    license.rel = "noopener noreferrer";
+    license.style.color = "#E6D9FF";
+    license.textContent = meta.LicenseShortName.value;
+
+    credit.append(
+      source,
+      " — " + clean(meta.Artist.value) + " · ",
+      license,
+      " · Wikimedia Commons · Immagine ritagliata"
+    );
+
+    return credit;
+
+  }
+
+  async function updateImage(img, queries, offset, isCover) {
+
+    try {
+
+      const result = await loadPhoto(queries, offset);
+
+      if (!result) return;
+
+      const { photo, destination } = result;
+
+      const preview = new Image();
+
+      await new Promise((resolve, reject) => {
+        preview.onload = resolve;
+        preview.onerror = reject;
+        preview.src = photo.thumburl;
+      });
+
+      const credit = createCredit(photo);
+
+      if (isCover) {
+
+        const section = img.closest("section");
+
+        if (!section) return;
+
+        section.after(credit);
+
+      } else {
+
+        const card = img.closest(".mood");
+
+        if (!card) return;
+
+        const group = card.closest(".atmospheres");
+
+        if (!group) return;
+
+        let credits = document.getElementById(
+          "atmosphereCredits"
+        );
+
+        if (!credits) {
+
+          credits = document.createElement("div");
+
+          credits.id = "atmosphereCredits";
+
+          credits.style.cssText =
+            "margin-top:12px;padding:0 4px;";
+
+          group.after(credits);
+
+        }
+
+        const name = document.createElement("strong");
+
+        name.textContent =
+          (card.querySelector("strong")?.textContent ||
+          img.dataset.mood) + " ";
+
+        credit.prepend(name);
+
+        credits.append(credit);
+
+      }
+
+      img.src = photo.thumburl;
+
+      img.alt = "Ispirazione di viaggio: " + destination;
+
+    } catch (error) {
+
+      console.warn("STAYGO Dynamic Engine:", error);
+
+    }
+
+  }
+
+  const cover = document.getElementById("dynamicCover");
+
+  if (cover) {
+
+    await updateImage(
+      cover,
+      seasons[season],
+      0,
+      true
+    );
+
+  }
+
+  const images = document.querySelectorAll(
+    ".atmospheres img[data-mood]"
+  );
+
+  let offset = 1;
+
+  for (const img of images) {
+
+    const mood = img.dataset.mood;
+
+    if (moods[mood]) {
+
+      await updateImage(
+        img,
+        moods[mood],
+        offset,
+        false
       );
 
-      const section = cover.closest("section");
+    }
 
-      if (!section) return;
-
-      section.after(credit);
-
-      cover.src = photo.thumburl;
-      cover.alt = "Ispirazione di viaggio: " + destination;
-
-    };
-
-    preview.src = photo.thumburl;
-
-  } catch (error) {
-
-    console.warn("STAYGO Dynamic Engine:", error);
+    offset++;
 
   }
 
