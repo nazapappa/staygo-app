@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14151A">
-<title>Flow Calendar | STAYGO°</title>
+<title>Flow Calendar 2.0 | STAYGO°</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -48,6 +48,7 @@ body{
 .flow-panel select,
 .flow-panel input{
   width:100%;
+  min-width:0;
   font-size:16px;
 }
 .month-bar{
@@ -126,7 +127,7 @@ body{
 .editor-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:15px;
+  gap:12px;
 }
 .flow-actions{
   display:flex;
@@ -137,13 +138,37 @@ body{
 .flow-actions button{
   flex:1;
 }
-#flowMessage{
+#flowMessage,#saveMessage{
   color:#E6D9FF;
   font-size:13px;
   overflow-wrap:anywhere;
 }
 #flowWorkspace[hidden]{
   display:none!important;
+}
+.selection-box{
+  background:#302A40;
+  border:1px solid #E6D9FF30;
+  padding:18px;
+  border-radius:18px;
+  margin-top:20px;
+}
+.selection-box strong{
+  color:#E6D9FF;
+  font-size:20px;
+}
+.selection-box p{
+  font-size:12px;
+  line-height:1.8;
+  overflow-wrap:anywhere;
+}
+.range-box{
+  border-top:1px solid #ffffff15;
+  margin-top:22px;
+  padding-top:18px;
+}
+.range-box h3{
+  font-size:17px;
 }
 .flow-footer{
   text-align:center;
@@ -170,7 +195,7 @@ body{
   <a class="logo" href="index.html">
     staygo<span>°</span>
   </a>
-  <span class="eyebrow">FLOW CALENDAR</span>
+  <span class="eyebrow">FLOW CALENDAR 2.0</span>
 </header>
 
 <main class="flow-main">
@@ -214,13 +239,17 @@ body{
     <section class="flow-panel">
 
       <div class="month-bar">
+
         <button id="prevMonth"
+          type="button"
           aria-label="Mese precedente">‹</button>
 
         <strong id="monthTitle"></strong>
 
         <button id="nextMonth"
+          type="button"
           aria-label="Mese successivo">›</button>
+
       </div>
 
       <div id="calendar"
@@ -260,6 +289,66 @@ body{
 
       </div>
 
+      <div class="selection-box">
+
+        <strong id="selectionCount">
+          0 giorni selezionati
+        </strong>
+
+        <p id="selectionDetails">
+          Tocca le date da modificare.
+        </p>
+
+        <p>
+          Le date rimangono selezionate
+          anche quando cambi mese.
+        </p>
+
+      </div>
+
+      <div class="flow-actions">
+
+        <button class="outline"
+          type="button" id="selectMonth">
+          Seleziona mese
+        </button>
+
+        <button class="outline"
+          type="button" id="clearSelection">
+          Deseleziona
+        </button>
+
+      </div>
+
+      <div class="range-box">
+
+        <h3>Seleziona un periodo</h3>
+
+        <div class="editor-grid">
+
+          <label>
+            Dal giorno
+            <input type="date" id="rangeStart">
+          </label>
+
+          <label>
+            Al giorno incluso
+            <input type="date" id="rangeEnd">
+          </label>
+
+        </div>
+
+        <div class="flow-actions">
+
+          <button class="outline"
+            type="button" id="selectRange">
+            Seleziona periodo
+          </button>
+
+        </div>
+
+      </div>
+
     </section>
 
     <section class="flow-panel">
@@ -268,21 +357,7 @@ body{
         EDIT AVAILABILITY
       </div>
 
-      <h2 id="selectionCount">
-        Nessuna data selezionata
-      </h2>
-
-      <div class="flow-actions">
-
-        <button class="outline" id="selectMonth">
-          Seleziona mese
-        </button>
-
-        <button class="outline" id="clearSelection">
-          Deseleziona
-        </button>
-
-      </div>
+      <h2>Personalizza le tue date.</h2>
 
       <form id="availabilityForm">
 
@@ -319,12 +394,16 @@ body{
         </label>
 
         <div class="flow-actions">
+
           <button class="cta"
             id="saveDates"
             type="submit" disabled>
             Salva modifiche
           </button>
+
         </div>
+
+        <p id="saveMessage" role="status"></p>
 
       </form>
 
@@ -385,43 +464,74 @@ body{
 
 <script>
 
-const db = supabase.createClient(
+const db=supabase.createClient(
   "https://zjfcnojzstlwzxeldaqn.supabase.co",
   "sb_publishable_7PH45XJmmxUiZfobZQS6SA_1rtHRZ72"
 );
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-let properties = [];
-let availability = new Map();
-let bookings = [];
-let selected = new Set();
-let currentMonth = new Date();
-let ready = false;
-let saving = false;
-let loadVersion = 0;
+let properties=[];
+let availability=new Map();
+let bookings=[];
+const selected=new Set();
 
+let currentMonth=new Date();
 currentMonth.setDate(1);
 
+let ready=false;
+let saving=false;
+let loadVersion=0;
+
 function dateKey(d){
+
   return d.getFullYear()+"-"+
     String(d.getMonth()+1).padStart(2,"0")+"-"+
     String(d.getDate()).padStart(2,"0");
+
 }
 
+function addDays(key,n){
+
+  const d=new Date(key+"T12:00:00");
+
+  d.setDate(d.getDate()+n);
+
+  return dateKey(d);
+
+}
+
+function prettyDate(key){
+
+  return new Date(key+"T12:00:00")
+    .toLocaleDateString("it-IT",{
+      day:"numeric",
+      month:"short",
+      year:"numeric"
+    });
+
+}
+
+$("rangeStart").min=dateKey(new Date());
+$("rangeEnd").min=dateKey(new Date());
+
 function property(){
+
   return properties.find(
     p=>p.id===$("property").value
   );
+
 }
 
 function message(text){
+
   $("flowMessage").textContent=text;
+
 }
 
-function bookingStatus(key){
+function bookingStatus(key,list=bookings){
 
-  const active=bookings.filter(b=>
+  const active=list.filter(b=>
     b.check_in<=key &&
     b.check_out>key
   );
@@ -429,24 +539,82 @@ function bookingStatus(key){
   if(active.some(b=>
     b.stato==="confermata" ||
     b.stato==="completata"
-  )) return "booked";
+  ))return "booked";
 
   if(active.some(b=>
     b.stato==="in_attesa"
-  )) return "pending";
+  ))return "pending";
 
   return null;
+
 }
 
 function updateSelection(){
 
+  const list=[...selected].sort();
+
   $("selectionCount").textContent=
-    selected.size
-    ? selected.size+" giorni selezionati"
-    : "Nessuna data selezionata";
+    list.length+" giorni selezionati";
+
+  if(!list.length){
+
+    $("selectionDetails").textContent=
+      "Tocca le date da modificare.";
+
+  }else{
+
+    const groups=[];
+
+    let start=list[0];
+    let end=list[0];
+
+    for(let i=1;i<list.length;i++){
+
+      if(list[i]===addDays(end,1)){
+
+        end=list[i];
+
+      }else{
+
+        groups.push(
+          start===end
+          ? prettyDate(start)
+          : prettyDate(start)+" — "+
+            prettyDate(end)
+        );
+
+        start=list[i];
+        end=list[i];
+
+      }
+
+    }
+
+    groups.push(
+      start===end
+      ? prettyDate(start)
+      : prettyDate(start)+" — "+
+        prettyDate(end)
+    );
+
+    $("selectionDetails").textContent=
+      groups.join(" · ");
+
+  }
 
   $("saveDates").disabled=
     !ready || saving || !selected.size;
+
+  $("saveDates").textContent=saving
+    ? "Operazione in corso..."
+    : "Salva modifiche ("+selected.size+")";
+
+  $("property").disabled=saving;
+  $("prevMonth").disabled=saving;
+  $("nextMonth").disabled=saving;
+  $("selectRange").disabled=saving || !ready;
+  $("selectMonth").disabled=saving || !ready;
+  $("clearSelection").disabled=saving;
 
 }
 
@@ -466,19 +634,25 @@ function renderCalendar(){
 
   ["L","M","M","G","V","S","D"]
   .forEach(day=>{
+
     const el=document.createElement("div");
+
     el.className="weekday";
     el.textContent=day;
+
     calendar.appendChild(el);
+
   });
 
   const offset=
     (new Date(y,m,1).getDay()+6)%7;
 
   for(let i=0;i<offset;i++){
+
     calendar.appendChild(
       document.createElement("div")
     );
+
   }
 
   const count=new Date(y,m+1,0).getDate();
@@ -497,8 +671,10 @@ function renderCalendar(){
       (occupied ||
       (info?.disponibile?"open":"closed"));
 
-    if(selected.has(key)){
+    if(selected.has(key) && !occupied){
+
       button.classList.add("selected");
+
     }
 
     button.disabled=
@@ -527,17 +703,30 @@ function renderCalendar(){
       "aria-pressed",selected.has(key)
     );
 
-    button.addEventListener("click",()=>{
+    button.setAttribute(
+      "aria-label",
+      prettyDate(key)+" "+price.textContent
+    );
+
+    button.onclick=()=>{
+
+      if(!ready || saving)return;
 
       if(selected.has(key)){
+
         selected.delete(key);
+
       }else{
+
         selected.add(key);
+
       }
+
+      $("saveMessage").textContent="";
 
       renderCalendar();
 
-    });
+    };
 
     calendar.appendChild(button);
 
@@ -547,18 +736,44 @@ function renderCalendar(){
 
 }
 
+async function getBookings(
+  propertyId,start,end
+){
+
+  const {data,error}=await db
+    .from("prenotazioni")
+    .select("check_in,check_out,stato")
+    .eq("alloggio_id",propertyId)
+    .lt("check_in",end)
+    .gt("check_out",start)
+    .in("stato",[
+      "in_attesa",
+      "confermata",
+      "completata"
+    ]);
+
+  if(error)throw error;
+
+  return data || [];
+
+}
+
 async function loadCalendar(){
 
   const version=++loadVersion;
 
   ready=false;
-  selected.clear();
+
+  // Non cancellare selected.
+  // La selezione resta valida tra mesi diversi.
+
   availability.clear();
   bookings=[];
 
   renderCalendar();
 
   const p=property();
+
   if(!p)return;
 
   message("Caricamento calendario...");
@@ -580,29 +795,30 @@ async function loadCalendar(){
         .gte("data",start)
         .lt("data",end),
 
-      db.from("prenotazioni")
-        .select("check_in,check_out,stato")
-        .eq("alloggio_id",p.id)
-        .lt("check_in",end)
-        .gt("check_out",start)
-        .in("stato",[
-          "in_attesa",
-          "confermata",
-          "completata"
-        ])
+      getBookings(p.id,start,end)
 
     ]);
 
     if(version!==loadVersion)return;
 
     if(dates.error)throw dates.error;
-    if(reservations.error)throw reservations.error;
 
     availability=new Map(
       dates.data.map(d=>[d.data,d])
     );
 
-    bookings=reservations.data;
+    bookings=reservations;
+
+    for(const key of selected){
+
+      if(key>=start && key<end &&
+         bookingStatus(key)){
+
+        selected.delete(key);
+
+      }
+
+    }
 
     ready=true;
 
@@ -622,6 +838,12 @@ async function loadCalendar(){
 
 function changeProperty(){
 
+  selected.clear();
+
+  $("saveMessage").textContent="";
+  $("rangeStart").value="";
+  $("rangeEnd").value="";
+
   const p=property();
 
   if(!p)return;
@@ -630,6 +852,7 @@ function changeProperty(){
     p.citta+" · "+p.stato;
 
   $("nightPrice").value=p.prezzo_notte;
+  $("minimumNights").value=1;
 
   loadCalendar();
 
@@ -668,6 +891,9 @@ $("clearSelection").onclick=()=>{
   if(saving)return;
 
   selected.clear();
+
+  $("saveMessage").textContent="";
+
   renderCalendar();
 
 };
@@ -697,6 +923,94 @@ $("selectMonth").onclick=()=>{
 
 };
 
+$("rangeStart").onchange=()=>{
+
+  $("rangeEnd").min=
+    $("rangeStart").value ||
+    dateKey(new Date());
+
+};
+
+$("selectRange").onclick=async()=>{
+
+  if(!ready || saving)return;
+
+  const start=$("rangeStart").value;
+  const end=$("rangeEnd").value;
+
+  if(!start || !end ||
+     end<start ||
+     start<dateKey(new Date())){
+
+    $("saveMessage").textContent=
+      "Controlla le date del periodo.";
+
+    return;
+
+  }
+
+  const days=Math.round(
+    (Date.parse(end)-Date.parse(start))
+    /86400000
+  )+1;
+
+  if(days>366){
+
+    $("saveMessage").textContent=
+      "Seleziona massimo 366 giorni.";
+
+    return;
+
+  }
+
+  saving=true;
+  renderCalendar();
+
+  try{
+
+    const reservations=await getBookings(
+      property().id,start,addDays(end,1)
+    );
+
+    let skipped=0;
+
+    for(let i=0;i<days;i++){
+
+      const key=addDays(start,i);
+
+      if(bookingStatus(key,reservations)){
+
+        selected.delete(key);
+        skipped++;
+
+      }else{
+
+        selected.add(key);
+
+      }
+
+    }
+
+    $("saveMessage").textContent=
+      "Periodo selezionato."+
+      (skipped
+      ? " "+skipped+" giorni occupati esclusi."
+      : "");
+
+  }catch(error){
+
+    $("saveMessage").textContent=
+      "Errore: "+error.message;
+
+  }finally{
+
+    saving=false;
+    renderCalendar();
+
+  }
+
+};
+
 $("availabilityForm")
 .addEventListener("submit",async e=>{
 
@@ -705,30 +1019,83 @@ $("availabilityForm")
   if(!ready || saving || !selected.size)return;
 
   const p=property();
+
   const price=Number($("nightPrice").value);
-  const minimum=Number($("minimumNights").value);
+
+  const minimum=Number(
+    $("minimumNights").value
+  );
 
   if(!p || !Number.isFinite(price) ||
-     price<=0 || !Number.isInteger(minimum) ||
-     minimum<1 || minimum>90)return;
+     price<=0 || price>99999999 ||
+     !Number.isInteger(minimum) ||
+     minimum<1 || minimum>90){
 
-  const rows=[...selected].map(day=>({
+    $("saveMessage").textContent=
+      "Controlla prezzo e soggiorno minimo.";
 
-    alloggio_id:p.id,
-    data:day,
-    disponibile:$("availability").value==="true",
-    prezzo_notte:price,
-    minimo_notti:minimum
+    return;
 
-  }));
+  }
+
+  const keys=[...selected].sort();
+
+  if(keys.length>366){
+
+    $("saveMessage").textContent=
+      "Puoi salvare massimo 366 giorni alla volta.";
+
+    return;
+
+  }
+
+  const open=$("availability").value==="true";
 
   saving=true;
 
-  $("property").disabled=true;
+  $("saveMessage").textContent=
+    "Verifica delle disponibilità...";
 
   renderCalendar();
 
   try{
+
+    const reservations=await getBookings(
+      p.id,
+      keys[0],
+      addDays(keys[keys.length-1],1)
+    );
+
+    const conflicts=keys.filter(key=>
+      bookingStatus(key,reservations) ||
+      key<dateKey(new Date())
+    );
+
+    if(conflicts.length){
+
+      conflicts.forEach(
+        key=>selected.delete(key)
+      );
+
+      $("saveMessage").textContent=
+        "Alcune date non sono più modificabili. "+
+        "Sono state escluse. Controlla e salva di nuovo.";
+
+      await loadCalendar();
+
+      return;
+
+    }
+
+    const rows=keys.map(day=>({
+
+      alloggio_id:p.id,
+      data:day,
+      disponibile:open,
+      prezzo_notte:price,
+      minimo_notti:minimum
+
+    }));
 
     const {error}=await db
       .from("disponibilita")
@@ -738,20 +1105,21 @@ $("availabilityForm")
 
     if(error)throw error;
 
-    await loadCalendar();
+    selected.clear();
 
-    if(ready){
-      message("Disponibilità salvate correttamente.");
-    }
+    $("saveMessage").textContent=
+      keys.length+" giorni salvati correttamente.";
+
+    await loadCalendar();
 
   }catch(error){
 
-    message("Errore: "+error.message);
+    $("saveMessage").textContent=
+      "Errore: "+error.message;
 
   }finally{
 
     saving=false;
-    $("property").disabled=false;
     renderCalendar();
 
   }
@@ -766,7 +1134,9 @@ async function init(){
 
     if(error || !data.user){
 
-      message("Accedi al tuo account per gestire il calendario.");
+      message(
+        "Accedi al tuo account per gestire il calendario."
+      );
 
       const link=document.createElement("a");
 
@@ -781,7 +1151,9 @@ async function init(){
     }
 
     const result=await db.from("alloggi")
-      .select("id,titolo,citta,prezzo_notte,stato")
+      .select(
+        "id,titolo,citta,prezzo_notte,stato"
+      )
       .eq("proprietario_id",data.user.id)
       .order("titolo");
 
@@ -791,7 +1163,10 @@ async function init(){
 
     if(!properties.length){
 
-      message("Non hai ancora proprietà da gestire.");
+      message(
+        "Non hai ancora proprietà da gestire."
+      );
+
       return;
 
     }
