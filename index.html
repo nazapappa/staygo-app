@@ -1,1 +1,577 @@
-<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Home | STAYGO</title><link rel="stylesheet" href="style.css"></head><body><header><div class="wrap bar"><a class="logo" href="index.html">STAY<span>GO</span></a><nav><a class="active" href="index.html">Home</a><a class="" href="alloggi.html">Cerca alloggi</a><a class="" href="ai.html">Organizza con AI</a><a class="" href="host.html">Diventa Host</a><a class="" href="annunci.html">I miei annunci</a><a href="account.html">Accedi / Account</a></nav></div></header><section class="hero split"><div class="wrap"><div><div class="eyebrow">Stay beautifully · Go anywhere</div><h1>Il mondo, a modo tuo.</h1><p>Scegli un soggiorno speciale o proponi il tuo alloggio. Una piattaforma essenziale, curata e facile da usare.</p><div class="actions"><a class="cta" href="alloggi.html">Esplora alloggi →</a><a class="outline" href="host.html">Pubblica un alloggio</a></div></div><img src="foto-1.jpg" alt="Immagine illustrativa di un alloggio"></div></section><section class="section"><div class="wrap"><div class="eyebrow">STAYGO EXPERIENCE</div><h2>Una piattaforma. Più possibilità.</h2><div class="grid"><article class="card"><img src="foto-4.jpg"><div class="body"><h3>Cerca un alloggio</h3><p>Trova soggiorni anche vicino a casa.</p><a href="alloggi.html">Esplora →</a></div></article><article class="card"><img src="foto-2.jpg"><div class="body"><h3>Organizza il viaggio</h3><p>Un percorso guidato per immaginare la tua prossima partenza.</p><a href="ai.html">Inizia →</a></div></article><article class="card"><img src="foto-5.jpg"><div class="body"><h3>Diventa Host</h3><p>Proponi il tuo immobile per la revisione del team STAYGO.</p><a href="host.html">Scopri come →</a></div></article></div></div></section><footer class="footer"><div class="wrap"><b>STAYGO</b><p>Prototipo dimostrativo · Fotografie illustrative generate digitalmente · Nessuna disponibilità o prenotazione reale.</p></div></footer><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14151A">
+<title>STAYGO° — The Living Journey</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+body{padding-bottom:100px}
+.home-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:22px 5%;
+  border:0;
+}
+.home-logo{
+  font-size:34px;
+  font-weight:800;
+  letter-spacing:-2.5px;
+}
+.home-logo span{color:var(--moon)}
+.profile-icon{
+  width:44px;
+  height:44px;
+  border:1px solid var(--border);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+}
+.home-main{
+  width:90%;
+  max-width:1400px;
+  margin:auto;
+}
+.cover{
+  min-height:540px;
+  position:relative;
+  overflow:hidden;
+  border-radius:32px;
+  display:flex;
+  align-items:flex-end;
+  isolation:isolate;
+}
+.cover>img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:-2;
+}
+.cover:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    180deg,#14151A10 10%,#14151Aef 100%
+  );
+  z-index:-1;
+}
+.cover-content{
+  padding:35px;
+  max-width:850px;
+}
+.cover h1{
+  font-size:clamp(40px,6vw,78px);
+  font-weight:500;
+  letter-spacing:-3px;
+  line-height:1.02;
+  margin:18px 0;
+}
+.cover h1 em{
+  color:var(--moon);
+  font-family:Georgia,serif;
+  font-weight:400;
+}
+.cover p{
+  color:#F4F1EACC;
+  font-size:15px;
+}
+.ai-entry{
+  background:linear-gradient(
+    135deg,#2D2939,#202127
+  );
+  border:1px solid #E6D9FF30;
+  border-radius:28px;
+  padding:22px;
+  margin:20px 0;
+}
+.ai-heading{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:15px;
+}
+.orb{
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  background:radial-gradient(
+    circle at 30% 25%,
+    #fff,#E6D9FF 35%,#76668F 80%
+  );
+  box-shadow:0 0 24px #E6D9FF50;
+}
+.ai-entry textarea{
+  background:transparent;
+  border:0;
+  padding:10px 0;
+  min-height:90px;
+  margin:0;
+  resize:vertical;
+}
+.ai-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+.ai-bottom small{
+  color:var(--muted);
+  font-size:11px;
+}
+.round-button{
+  width:48px;
+  height:48px;
+  padding:0;
+  border-radius:50%;
+  font-size:23px;
+}
+.quick-search{
+  padding:24px;
+  background:var(--surface);
+  border-radius:28px;
+  border:1px solid var(--border);
+}
+.quick-search h2{
+  font-size:23px;
+  margin:0 0 15px;
+}
+.quick-search button{
+  width:100%;
+  margin-top:15px;
+}
+.search-dates{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.search-dates input{
+  min-width:0;
+  padding:12px 8px;
+}
+.section-heading{
+  margin:45px 0 20px;
+}
+.section-heading h2{
+  margin:12px 0;
+  font-weight:500;
+  font-size:32px;
+}
+.section-heading p{
+  margin:0;
+  font-size:14px;
+}
+.atmospheres{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:28%;
+  gap:14px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scrollbar-width:none;
+}
+.atmospheres::-webkit-scrollbar{
+  display:none;
+}
+.mood{
+  position:relative;
+  height:290px;
+  border-radius:25px;
+  overflow:hidden;
+  scroll-snap-align:start;
+  isolation:isolate;
+}
+.mood img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:-2;
+}
+.mood:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    transparent,#14151Adf
+  );
+  z-index:-1;
+}
+.mood-content{
+  position:absolute;
+  bottom:20px;
+  left:20px;
+  right:15px;
+}
+.mood-content strong{
+  display:block;
+  font-size:23px;
+  font-weight:500;
+  letter-spacing:-.7px;
+}
+.mood-content small{
+  color:#F4F1EABB;
+  font-size:11px;
+}
+.host-banner{
+  padding:28px;
+  margin:40px 0 20px;
+  border:1px solid var(--border);
+  border-radius:28px;
+  background:var(--surface);
+}
+.host-banner h2{
+  font-size:28px;
+  margin:15px 0;
+}
+.home-footer{
+  padding:30px 0;
+  text-align:center;
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:1px;
+}
+@media(max-width:760px){
+  .cover{min-height:460px}
+  .cover-content{padding:25px}
+  .cover h1{font-size:43px}
+  .atmospheres{grid-auto-columns:65%}
+  .mood{height:260px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="home-header">
+  <a class="home-logo" href="index.html">
+    staygo<span>°</span>
+  </a>
+
+  <a class="profile-icon"
+     href="account.html"
+     aria-label="Profilo">
+    <svg width="22" height="22"
+      viewBox="0 0 24 24"
+      fill="none" stroke="currentColor"
+      stroke-width="1.5">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21v-2a8 8 0 0116 0v2"/>
+    </svg>
+  </a>
+</header>
+
+<main class="home-main">
+
+  <section class="cover">
+
+    <img src="foto-1.jpg"
+      alt="Ispirazione per il prossimo viaggio">
+
+    <div class="cover-content">
+
+      <div class="eyebrow">
+        The Living Journey
+      </div>
+
+      <h1>
+        Non scegliere una destinazione.
+        <em>Scegli come vuoi sentirti.</em>
+      </h1>
+
+      <p>
+        Il mondo non è soltanto un luogo.
+        È tutto quello che puoi vivere.
+      </p>
+
+    </div>
+
+  </section>
+
+  <form class="ai-entry" id="dreamForm">
+
+    <div class="ai-heading">
+      <div class="orb"></div>
+      <div>
+        <strong>STAYGO Intelligence</strong>
+        <div class="eyebrow"
+          style="letter-spacing:1px;margin-top:5px">
+          Your personal travel companion
+        </div>
+      </div>
+    </div>
+
+    <textarea
+      id="dream"
+      maxlength="1000"
+      required
+      aria-label="Descrivi il tuo viaggio"
+      placeholder="Raccontami il viaggio che immagini...">
+    </textarea>
+
+    <div class="ai-bottom">
+      <small>Anteprima assistente di viaggio</small>
+      <button class="round-button"
+        type="submit"
+        aria-label="Organizza il viaggio">
+        ↗
+      </button>
+    </div>
+
+  </form>
+
+  <form class="quick-search" id="quickSearch">
+
+    <h2>Hai già una destinazione?</h2>
+
+    <label>
+      DOVE
+      <input id="destination"
+        placeholder="Città o destinazione">
+    </label>
+
+    <div class="search-dates">
+
+      <label>
+        ARRIVO
+        <input type="date" id="arrival">
+      </label>
+
+      <label>
+        PARTENZA
+        <input type="date" id="departure">
+      </label>
+
+    </div>
+
+    <label>
+      VIAGGIATORI
+      <select id="travellers">
+        <option value="1">1 viaggiatore</option>
+        <option value="2" selected>2 viaggiatori</option>
+        <option value="3">3 viaggiatori</option>
+        <option value="4">4 viaggiatori</option>
+        <option value="5">5 viaggiatori</option>
+        <option value="6">6 viaggiatori</option>
+        <option value="8">8 viaggiatori</option>
+        <option value="10">10 viaggiatori</option>
+      </select>
+    </label>
+
+    <button type="submit">
+      Esplora gli alloggi ↗
+    </button>
+
+    <p class="notice">
+      Ricerca per destinazione.
+      Disponibilità per date e ospiti
+      in fase di sviluppo.
+    </p>
+
+  </form>
+
+  <div class="section-heading">
+
+    <div class="eyebrow">
+      STAYGO Atmosphere
+    </div>
+
+    <h2>Segui le tue emozioni.</h2>
+
+    <p>
+      Ogni viaggio comincia da una sensazione.
+    </p>
+
+  </div>
+
+  <div class="atmospheres">
+
+    <a class="mood"
+      href="ai.html?mood=liberta">
+      <img src="foto-2.jpg"
+        alt="Ispirazione di viaggio">
+      <div class="mood-content">
+        <small>01 / FEEL</small>
+        <strong>Libertà.</strong>
+      </div>
+    </a>
+
+    <a class="mood"
+      href="ai.html?mood=romanticismo">
+      <img src="foto-3.jpg"
+        alt="Ispirazione romantica">
+      <div class="mood-content">
+        <small>02 / FEEL</small>
+        <strong>Romanticismo.</strong>
+      </div>
+    </a>
+
+    <a class="mood"
+      href="ai.html?mood=avventura">
+      <img src="foto-4.jpg"
+        alt="Ispirazione per nuove esperienze">
+      <div class="mood-content">
+        <small>03 / FEEL</small>
+        <strong>Avventura.</strong>
+      </div>
+    </a>
+
+    <a class="mood"
+      href="ai.html?mood=esclusivita">
+      <img src="foto-5.jpg"
+        alt="Ispirazione per soggiorni esclusivi">
+      <div class="mood-content">
+        <small>04 / FEEL</small>
+        <strong>Esclusività.</strong>
+      </div>
+    </a>
+
+    <a class="mood"
+      href="ai.html?mood=relax">
+      <img src="foto-6.jpg"
+        alt="Ispirazione per il relax">
+      <div class="mood-content">
+        <small>05 / FEEL</small>
+        <strong>Silenzio.</strong>
+      </div>
+    </a>
+
+  </div>
+
+  <section class="host-banner">
+
+    <div class="eyebrow">
+      STAYGO / Host Collection
+    </div>
+
+    <h2>Il tuo spazio.<br>Il loro prossimo ricordo.</h2>
+
+    <p>
+      Proponi il tuo alloggio ed entra
+      nel mondo STAYGO.
+    </p>
+
+    <a class="outline" href="host.html">
+      Diventa Host ↗
+    </a>
+
+  </section>
+
+  <footer class="home-footer">
+    STAYGO° — THE LIVING JOURNEY
+    <p>
+      Prototipo dimostrativo.
+      Nessuna prenotazione reale.
+    </p>
+  </footer>
+
+</main>
+
+<nav class="bottom-nav"
+  aria-label="Navigazione principale">
+
+  <a class="active"
+    href="index.html"
+    aria-current="page">
+    <svg viewBox="0 0 24 24">
+      <path d="M3 10l9-7 9 7v11H3z"/>
+      <path d="M9 21v-8h6v8"/>
+    </svg>
+    Home
+  </a>
+
+  <a href="alloggi.html">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M16 8l-3 5-5 3 3-5z"/>
+    </svg>
+    Esplora
+  </a>
+
+  <a href="ai.html">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>
+    </svg>
+    STAY AI
+  </a>
+
+  <a href="host.html">
+    <svg viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="5"/>
+      <path d="M12 7v10M7 12h10"/>
+    </svg>
+    Host
+  </a>
+
+  <a href="account.html">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21v-2a8 8 0 0116 0v2"/>
+    </svg>
+    Profilo
+  </a>
+
+</nav>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function localDate(d){
+  return d.getFullYear()+'-'+
+    String(d.getMonth()+1).padStart(2,'0')+'-'+
+    String(d.getDate()).padStart(2,'0');
+}
+
+$('arrival').min = localDate(new Date());
+
+$('arrival').onchange = () => {
+  if(!$('arrival').value) return;
+
+  const next = new Date(
+    $('arrival').value+'T12:00:00'
+  );
+
+  next.setDate(next.getDate()+1);
+  $('departure').min = localDate(next);
+
+  if($('departure').value < $('departure').min){
+    $('departure').value = '';
+  }
+};
+
+$('quickSearch').onsubmit = e => {
+  e.preventDefault();
+
+  const params = new URLSearchParams({
+    city:$('destination').value.trim(),
+    arrival:$('arrival').value,
+    departure:$('departure').value,
+    guests:$('travellers').value
+  });
+
+  location.href = 'alloggi.html?'+params;
+};
+
+$('dream').value = '';
+
+$('dreamForm').onsubmit = e => {
+  e.preventDefault();
+
+  const dream = $('dream').value.trim();
+  if(!dream) return;
+
+  sessionStorage.setItem('staygoDream',dream);
+
+  location.href = 'ai.html';
+};
+</script>
+
+</body>
+</html>
