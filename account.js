@@ -10,7 +10,93 @@ let currentUser = null;
 let currentProfile = null;
 let currentStep = 1;
 let busy = false;
+let resendUntil = 0;
+let resendTimer = null;
 
+function updateResendButton() {
+
+  const seconds = Math.max(
+    0,
+    Math.ceil((resendUntil - Date.now()) / 1000)
+  );
+
+  $('resendButton').disabled =
+    busy || seconds > 0;
+
+  $('resendCountdown').textContent =
+    seconds > 0
+      ? 'Potrai richiedere una nuova email tra ' +
+        seconds + ' secondi.'
+      : 'Puoi richiedere una nuova email.';
+
+  if (seconds === 0) {
+    clearInterval(resendTimer);
+    resendTimer = null;
+  }
+}
+
+function startResendCountdown(seconds = 60) {
+
+  clearInterval(resendTimer);
+
+  resendUntil = Date.now() + seconds * 1000;
+
+  resendTimer = setInterval(
+    updateResendButton,
+    1000
+  );
+
+  updateResendButton();
+}
+
+async function resendVerification() {
+
+  if (busy || Date.now() < resendUntil) return;
+
+  await run(async () => {
+
+    const email =
+      $('verificationEmail').textContent.trim();
+
+    if (!email) {
+      throw Error('Indirizzo email non disponibile.');
+    }
+
+    startResendCountdown();
+
+    const { error } = await db.auth.resend({
+      type: 'signup',
+      email: email,
+      options: {
+        emailRedirectTo:
+          location.origin + '/account.html'
+      }
+    });
+
+    if (error) {
+
+      if (error.status === 429) {
+        message(
+          'Troppe richieste. Attendi prima di riprovare.',
+          true
+        );
+        return;
+      }
+
+      message(
+        'Non è stato possibile completare la richiesta. Riprova più tardi.',
+        true
+      );
+
+      return;
+    }
+
+    message(
+      'Se il tuo account richiede una conferma, riceverai una nuova email.'
+    );
+
+  });
+}
 function message(text, error = false) {
   $('accountMessage').textContent = text;
   $('accountMessage').style.color =
@@ -31,10 +117,16 @@ function show(id) {
 }
 
 function setBusy(value) {
+
   busy = value;
+
   document.querySelectorAll('button').forEach(b => {
     b.disabled = value;
   });
+
+  if ($('resendButton')) {
+    updateResendButton();
+  }
 }
 
 async function run(action) {
@@ -279,10 +371,7 @@ $('loginEmail').value = email;
 
 show('verifyView');
 
-$('resendButton').disabled = true;
-
-$('resendCountdown').textContent =
-  'Reinvio temporaneamente non disponibile.';
+startResendCountdown();
     }
   });
 }
