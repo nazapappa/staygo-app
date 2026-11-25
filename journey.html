@@ -1,0 +1,801 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14151A">
+
+<title>My Journey | STAYGO°</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+
+body{
+  background:#14151A;
+  color:#F4F1EA;
+  padding-bottom:110px;
+}
+
+.journey-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:24px 5%;
+}
+
+.journey-main{
+  width:90%;
+  max-width:900px;
+  margin:auto;
+}
+
+.eyebrow{
+  color:#A6A8B2;
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+}
+
+.hero{
+  padding:35px 0;
+}
+
+.hero h1{
+  font-size:clamp(42px,8vw,68px);
+  font-weight:500;
+  letter-spacing:-2px;
+  line-height:1.05;
+  margin:20px 0;
+}
+
+.hero em{
+  color:#E6D9FF;
+  font-family:Georgia,serif;
+  font-weight:400;
+}
+
+.hero p{
+  color:#A6A8B2;
+  line-height:1.7;
+}
+
+.journey-tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin-bottom:25px;
+}
+
+.journey-tabs button{
+  flex-shrink:0;
+  border:1px solid #FFFFFF20;
+  border-radius:40px;
+  background:transparent;
+  color:#A6A8B2;
+  padding:13px 17px;
+  cursor:pointer;
+  font-size:12px;
+}
+
+.journey-tabs button.active{
+  background:#E6D9FF;
+  color:#14151A;
+  border-color:#E6D9FF;
+}
+
+.journey-list{
+  display:grid;
+  gap:20px;
+}
+
+.trip-card{
+  background:#202127;
+  border:1px solid #FFFFFF12;
+  border-radius:26px;
+  overflow:hidden;
+}
+
+.trip-image{
+  display:block;
+  width:100%;
+  height:220px;
+  object-fit:cover;
+}
+
+.trip-cover{
+  height:150px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#40364E,#202127);
+  color:#E6D9FF;
+  font-size:45px;
+}
+
+.trip-content{
+  padding:24px;
+}
+
+.trip-content h2{
+  font-size:29px;
+  font-weight:500;
+  letter-spacing:-1px;
+  margin:12px 0;
+}
+
+.trip-city{
+  color:#A6A8B2;
+  font-size:14px;
+}
+
+.trip-details{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  padding:20px 0;
+  margin-top:15px;
+  border-top:1px solid #FFFFFF12;
+  border-bottom:1px solid #FFFFFF12;
+}
+
+.trip-details small{
+  display:block;
+  color:#A6A8B2;
+  font-size:10px;
+  letter-spacing:1px;
+  margin-bottom:7px;
+}
+
+.trip-details strong{
+  font-size:14px;
+  font-weight:500;
+}
+
+.trip-status{
+  display:inline-block;
+  padding:9px 13px;
+  border-radius:30px;
+  font-size:11px;
+  background:#FFFFFF10;
+  color:#A6A8B2;
+}
+
+.trip-status.in_attesa{
+  background:#F4C77815;
+  color:#F4C778;
+}
+
+.trip-status.confermata{
+  background:#A8DFC015;
+  color:#A8DFC0;
+}
+
+.trip-status.annullata,
+.trip-status.scaduta{
+  color:#FF9999;
+}
+
+.trip-price{
+  font-size:27px;
+  color:#E6D9FF;
+  margin:20px 0;
+}
+
+.trip-countdown{
+  color:#F4C778;
+  background:#F4C77810;
+  padding:14px;
+  border-radius:12px;
+  font-size:13px;
+  margin:16px 0;
+}
+
+.trip-link{
+  display:block;
+  padding:16px;
+  border:1px solid #FFFFFF20;
+  border-radius:40px;
+  color:#F4F1EA;
+  text-decoration:none;
+  text-align:center;
+  font-size:13px;
+}
+
+.empty{
+  background:#202127;
+  border:1px solid #FFFFFF12;
+  border-radius:26px;
+  text-align:center;
+  padding:45px 25px;
+}
+
+.empty-symbol{
+  font-size:45px;
+  color:#E6D9FF;
+}
+
+.empty p{
+  color:#A6A8B2;
+  line-height:1.7;
+}
+
+.primary{
+  display:block;
+  background:#E6D9FF;
+  color:#14151A;
+  padding:17px;
+  border-radius:40px;
+  text-decoration:none;
+  text-align:center;
+  margin-top:25px;
+}
+
+.services{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:30px;
+}
+
+.service{
+  background:#202127;
+  border:1px solid #FFFFFF12;
+  border-radius:22px;
+  padding:22px;
+}
+
+.service span{
+  display:block;
+  color:#E6D9FF;
+  font-size:27px;
+  margin-bottom:15px;
+}
+
+.service strong{
+  font-size:14px;
+  font-weight:500;
+}
+
+.service small{
+  display:block;
+  color:#A6A8B2;
+  font-size:11px;
+  margin-top:7px;
+}
+
+#journeyMessage{
+  color:#A6A8B2;
+  font-size:13px;
+  padding:12px 0;
+}
+
+footer{
+  text-align:center;
+  padding:45px 0;
+  color:#A6A8B2;
+  font-size:10px;
+  letter-spacing:2px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="journey-header">
+
+  <a class="logo" href="index.html">
+    staygo<span>°</span>
+  </a>
+
+  <a class="outline" href="account.html">
+    Profilo ↗
+  </a>
+
+</header>
+
+<main class="journey-main">
+
+  <section class="hero">
+
+    <div class="eyebrow">
+      YOUR PERSONAL JOURNEY
+    </div>
+
+    <h1>
+      Il mondo<br>
+      <em>ti aspetta.</em>
+    </h1>
+
+    <p>
+      Ogni viaggio racconta una storia.
+      Qui inizia la tua.
+    </p>
+
+  </section>
+
+  <section id="loginRequired" class="empty" hidden>
+
+    <div class="empty-symbol">◎</div>
+
+    <h2>Il tuo spazio personale.</h2>
+
+    <p>
+      Accedi al tuo account per visualizzare
+      e gestire i tuoi viaggi.
+    </p>
+
+    <a class="primary" href="account.html">
+      Accedi a STAYGO ↗
+    </a>
+
+  </section>
+
+  <section id="workspace" hidden>
+
+    <div class="journey-tabs">
+
+      <button class="active"
+        data-filter="upcoming">
+        In programma
+      </button>
+
+      <button data-filter="past">
+        Passati
+      </button>
+
+      <button data-filter="cancelled">
+        Annullati
+      </button>
+
+    </div>
+
+    <div id="journeyList"
+      class="journey-list">
+    </div>
+
+    <div class="services">
+
+      <div class="service">
+        <span>♡</span>
+        <strong>Preferiti</strong>
+        <small>Prossimamente</small>
+      </div>
+
+      <div class="service">
+        <span>◎</span>
+        <strong>Assistenza</strong>
+        <small>Prossimamente</small>
+      </div>
+
+      <div class="service">
+        <span>◇</span>
+        <strong>Documenti</strong>
+        <small>Prossimamente</small>
+      </div>
+
+      <div class="service">
+        <span>▱</span>
+        <strong>STAYGO Pay</strong>
+        <small>Prossimamente</small>
+      </div>
+
+    </div>
+
+  </section>
+
+  <p id="journeyMessage"
+    role="status"
+    aria-live="polite">
+    Connessione a STAYGO...
+  </p>
+
+  <footer>
+    STAYGO° — THE LIVING JOURNEY
+    <p>Ambiente dimostrativo.</p>
+  </footer>
+
+</main>
+
+<nav class="bottom-nav">
+
+  <a href="index.html">
+    <svg viewBox="0 0 24 24">
+      <path d="M3 10l9-7 9 7v11H3z"/>
+      <path d="M9 21v-8h6v8"/>
+    </svg>
+    Home
+  </a>
+
+  <a href="alloggi.html">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M16 8l-3 5-5 3 3-5z"/>
+    </svg>
+    Esplora
+  </a>
+
+  <a href="ai.html">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>
+    </svg>
+    STAY AI
+  </a>
+
+  <a href="host.html">
+    <svg viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="5"/>
+      <path d="M12 7v10M7 12h10"/>
+    </svg>
+    Host
+  </a>
+
+  <a class="active" href="account.html">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21v-2a8 8 0 0116 0v2"/>
+    </svg>
+    Profilo
+  </a>
+
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const db = window.supabase.createClient(
+  'https://zjfcnojzstlwzxeldaqn.supabase.co',
+  'sb_publishable_7PH45XJmmxUiZfobZQS6SA_1rtHRZ72'
+);
+
+const $ = id => document.getElementById(id);
+
+let bookings = [];
+let filter = 'upcoming';
+let timer = null;
+let refreshing = false;
+
+const labels = {
+  in_attesa:'In attesa',
+  confermata:'Confermata',
+  completata:'Completata',
+  annullata:'Annullata',
+  scaduta:'Scaduta'
+};
+
+function escapeHTML(value){
+
+  return String(value ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+
+}
+
+function formatDate(value){
+
+  if(!value) return '—';
+
+  return new Date(value+'T12:00:00')
+    .toLocaleDateString('it-IT',{
+      day:'numeric',
+      month:'long',
+      year:'numeric'
+    });
+
+}
+
+function formatMoney(value){
+
+  return new Intl.NumberFormat('it-IT',{
+    style:'currency',
+    currency:'EUR'
+  }).format(Number(value));
+
+}
+
+function today(){
+
+  const d=new Date();
+
+  return d.getFullYear()+'-'+
+    String(d.getMonth()+1).padStart(2,'0')+'-'+
+    String(d.getDate()).padStart(2,'0');
+
+}
+
+function effectiveStatus(booking){
+
+  if(
+    booking.stato==='in_attesa' &&
+    booking.scadenza_il &&
+    new Date(booking.scadenza_il).getTime()<=Date.now()
+  ){
+    return 'scaduta';
+  }
+
+  return booking.stato;
+
+}
+
+function filteredBookings(){
+
+  return bookings.filter(b=>{
+
+    const status=effectiveStatus(b);
+
+    if(filter==='cancelled'){
+      return ['annullata','scaduta'].includes(status);
+    }
+
+    if(filter==='past'){
+      return status==='completata' ||
+        (
+          status==='confermata' &&
+          b.check_out<=today()
+        );
+    }
+
+    return status==='in_attesa' ||
+      (
+        status==='confermata' &&
+        b.check_out>today()
+      );
+
+  });
+
+}
+
+function render(){
+
+  const list=$('journeyList');
+
+  const items=filteredBookings();
+
+  if(!items.length){
+
+    list.innerHTML=`
+      <div class="empty">
+        <div class="empty-symbol">✧</div>
+        <h2>Nessun viaggio da mostrare.</h2>
+        <p>
+          Le tue esperienze STAYGO
+          appariranno qui.
+        </p>
+        <a class="primary" href="alloggi.html">
+          Esplora il mondo ↗
+        </a>
+      </div>
+    `;
+
+    return;
+  }
+
+  list.innerHTML=items.map(b=>{
+
+    const stay=b.alloggi || {};
+
+    const status=effectiveStatus(b);
+
+    const countdown=status==='in_attesa'
+      ? `<div class="trip-countdown"
+           data-expiry="${escapeHTML(b.scadenza_il)}">
+           Calcolo del tempo rimanente...
+         </div>`
+      : '';
+
+    const detailsLink=stay.titolo
+      ? `<a class="trip-link"
+           href="alloggio.html?id=${encodeURIComponent(b.alloggio_id)}">
+           Visualizza alloggio ↗
+         </a>`
+      : '';
+
+    return `
+      <article class="trip-card">
+
+        <div class="trip-cover">◇</div>
+
+        <div class="trip-content">
+
+          <span class="trip-status ${escapeHTML(status)}">
+            ${escapeHTML(labels[status] || status)}
+          </span>
+
+          <h2>
+            ${escapeHTML(stay.titolo || 'Soggiorno STAYGO')}
+          </h2>
+
+          <div class="trip-city">
+            ${escapeHTML(stay.citta || '')}
+          </div>
+
+          <div class="trip-details">
+
+            <div>
+              <small>CHECK-IN</small>
+              <strong>${formatDate(b.check_in)}</strong>
+            </div>
+
+            <div>
+              <small>CHECK-OUT</small>
+              <strong>${formatDate(b.check_out)}</strong>
+            </div>
+
+            <div>
+              <small>OSPITI</small>
+              <strong>${escapeHTML(b.ospiti)}</strong>
+            </div>
+
+            <div>
+              <small>RIFERIMENTO</small>
+              <strong>
+                ${escapeHTML(b.id.slice(0,8).toUpperCase())}
+              </strong>
+            </div>
+
+          </div>
+
+          ${countdown}
+
+          <div class="trip-price">
+            ${formatMoney(b.prezzo_totale)}
+          </div>
+
+          ${detailsLink}
+
+        </div>
+
+      </article>
+    `;
+
+  }).join('');
+
+  updateCountdowns();
+
+}
+
+function updateCountdowns(){
+
+  let expired=false;
+
+  document.querySelectorAll('[data-expiry]')
+    .forEach(el=>{
+
+      const seconds=Math.max(
+        0,
+        Math.ceil(
+          (
+            new Date(el.dataset.expiry).getTime()-
+            Date.now()
+          )/1000
+        )
+      );
+
+      const min=Math.floor(seconds/60);
+
+      const sec=String(seconds%60).padStart(2,'0');
+
+      el.textContent=seconds>0
+        ? 'Tempo rimanente: '+min+':'+sec
+        : 'Prenotazione scaduta';
+
+      if(seconds===0){
+        expired=true;
+      }
+
+    });
+
+  if(expired && !refreshing){
+    render();
+    loadBookings();
+  }
+
+}
+
+async function loadBookings(){
+
+  if(refreshing) return;
+
+  refreshing=true;
+
+  try{
+
+    const {data:auth,error:authError}=
+      await db.auth.getUser();
+
+    if(!auth?.user){
+
+      $('workspace').hidden=true;
+      $('loginRequired').hidden=false;
+      $('journeyMessage').textContent='';
+
+      return;
+
+    }
+
+    if(authError) throw authError;
+
+    const {data,error}=await db
+      .from('prenotazioni')
+      .select(`
+        id,
+        alloggio_id,
+        check_in,
+        check_out,
+        ospiti,
+        prezzo_totale,
+        stato,
+        scadenza_il,
+        alloggi(titolo,citta)
+      `)
+      .eq('viaggiatore_id',auth.user.id)
+      .order('check_in',{ascending:false});
+
+    if(error) throw error;
+
+    bookings=data || [];
+
+    $('workspace').hidden=false;
+    $('loginRequired').hidden=true;
+
+    $('journeyMessage').textContent='';
+
+    render();
+
+  }catch(error){
+
+    $('journeyMessage').textContent=
+      'Impossibile caricare i viaggi. Riprova più tardi.';
+
+    console.error(error);
+
+  }finally{
+
+    refreshing=false;
+
+  }
+
+}
+
+document.querySelectorAll('[data-filter]')
+  .forEach(button=>{
+
+    button.addEventListener('click',()=>{
+
+      filter=button.dataset.filter;
+
+      document.querySelectorAll('[data-filter]')
+        .forEach(b=>{
+          b.classList.toggle('active',b===button);
+        });
+
+      render();
+
+    });
+
+  });
+
+loadBookings();
+
+timer=setInterval(updateCountdowns,1000);
+
+document.addEventListener('visibilitychange',()=>{
+
+  if(!document.hidden){
+    loadBookings();
+  }
+
+});
+
+</script>
+
+</body>
+</html>
