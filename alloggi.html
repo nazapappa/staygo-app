@@ -1,1 +1,396 @@
-<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cerca alloggi | STAYGO</title><link rel="stylesheet" href="style.css"></head><body><header><div class="wrap bar"><a class="logo" href="index.html">STAY<span>GO</span></a><nav><a class="" href="index.html">Home</a><a class="active" href="alloggi.html">Cerca alloggi</a><a class="" href="ai.html">Organizza con AI</a><a class="" href="host.html">Diventa Host</a><a class="" href="annunci.html">I miei annunci</a><a href="account.html">Accedi / Account</a></nav></div></header><section class="section"><div class="wrap"><div class="eyebrow">THE STAY COLLECTION</div><h1>Trova il tuo prossimo soggiorno.</h1><p>Annunci approvati nel database di test. Nessuna prenotazione reale.</p><div class="filters"><input id="city" placeholder="Città o destinazione"><select id="kind"><option value="">Tutte le tipologie</option><option value="bnb">B&B</option><option value="appartamento">Appartamento</option><option value="villa">Villa</option><option value="hotel">Hotel</option></select><select id="budget"><option value="0">Qualsiasi prezzo</option><option value="100">Fino a €100</option><option value="200">Fino a €200</option><option value="350">Fino a €350</option></select><button class="cta" onclick="filterStays()">Cerca</button></div><p id="count" aria-live="polite"></p><div class="grid" id="stays"></div></div></section><footer class="footer"><div class="wrap"><b>STAYGO</b><p>Prototipo dimostrativo · Fotografie illustrative generate digitalmente · Nessuna disponibilità o prenotazione reale.</p></div></footer><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#14151A">
+<title>Explore | STAYGO°</title>
+
+<style>
+:root{
+  --dark:#14151A;
+  --surface:#202127;
+  --light:#F4F1EA;
+  --moon:#E6D9FF;
+  --muted:#A6A8B2;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--dark);
+  color:var(--light);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:24px 5%;
+}
+.logo{
+  font-size:32px;
+  font-weight:800;
+  letter-spacing:-2px;
+}
+.logo span{color:var(--moon)}
+.account{
+  border:1px solid #ffffff25;
+  padding:12px 18px;
+  border-radius:50px;
+  font-size:13px;
+}
+main{
+  max-width:1400px;
+  margin:auto;
+  padding:0 5% 120px;
+}
+.hero{
+  position:relative;
+  min-height:300px;
+  border-radius:30px;
+  overflow:hidden;
+  display:flex;
+  align-items:flex-end;
+  background:#292831;
+}
+.hero img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(transparent,#14151AeF);
+}
+.hero-content{
+  position:relative;
+  z-index:1;
+  padding:30px;
+}
+.eyebrow{
+  color:var(--moon);
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+}
+h1{
+  font-size:clamp(36px,6vw,65px);
+  font-weight:500;
+  line-height:1.05;
+  letter-spacing:-2px;
+  margin:15px 0;
+}
+.search{
+  position:relative;
+  margin:20px 0;
+  padding:18px;
+  border-radius:24px;
+  background:var(--surface);
+  border:1px solid #ffffff12;
+}
+input,select{
+  width:100%;
+  min-width:0;
+  background:var(--dark);
+  color:var(--light);
+  padding:15px;
+  border:1px solid #ffffff18;
+  border-radius:14px;
+  font-size:16px;
+}
+.filters{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:10px 0;
+}
+button{
+  width:100%;
+  padding:16px;
+  border:0;
+  border-radius:50px;
+  background:var(--moon);
+  color:var(--dark);
+  font-weight:700;
+  cursor:pointer;
+}
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-top:35px;
+}
+h2{
+  font-size:26px;
+  font-weight:500;
+  letter-spacing:-1px;
+}
+#count{
+  color:var(--muted);
+  font-size:12px;
+}
+#stays{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:20px;
+}
+.panel{
+  min-width:0;
+  background:var(--surface);
+  padding:18px;
+  border-radius:25px;
+  border:1px solid #ffffff10;
+  overflow:hidden;
+}
+.panel h3{
+  font-size:24px;
+  letter-spacing:-1px;
+  margin:15px 0 8px;
+}
+.panel p{
+  font-size:14px;
+  line-height:1.6;
+  color:var(--muted);
+  overflow-wrap:anywhere;
+}
+.panel img{
+  border-radius:16px!important;
+}
+.panel .outline{
+  display:block;
+  text-align:center;
+  background:var(--moon);
+  color:var(--dark);
+  border-radius:50px;
+  padding:14px;
+  font-size:14px;
+  font-weight:700;
+  margin-top:20px;
+}
+.ai-banner{
+  margin:30px 0;
+  padding:24px;
+  border-radius:25px;
+  background:linear-gradient(135deg,#302A40,#202127);
+  border:1px solid #E6D9FF25;
+}
+.ai-banner h2{margin:12px 0}
+.ai-banner p{
+  color:var(--muted);
+  line-height:1.6;
+  font-size:14px;
+}
+.ai-banner a{
+  color:var(--moon);
+  font-size:14px;
+  font-weight:600;
+}
+.bottom-nav{
+  position:fixed;
+  z-index:50;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:space-around;
+  padding:15px 5% calc(15px + env(safe-area-inset-bottom));
+  background:#14151Aed;
+  backdrop-filter:blur(20px);
+  border-top:1px solid #ffffff15;
+}
+.bottom-nav a{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:10px;
+}
+.bottom-nav a.active{
+  color:var(--moon);
+}
+.bottom-nav svg{
+  width:23px;
+  height:23px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.notice{
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+  margin-top:30px;
+}
+@media(max-width:900px){
+  #stays{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+  #stays{grid-template-columns:1fr}
+  .hero{min-height:290px}
+  .hero-content{padding:23px}
+  .panel img{height:200px!important}
+  .section-title h2{font-size:23px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    staygo<span>°</span>
+  </a>
+  <a class="account" href="account.html">
+    Il mio profilo
+  </a>
+</header>
+
+<main>
+
+  <div class="hero">
+    <img src="foto-1.jpg" alt="Ispirazione di viaggio">
+    <div class="hero-content">
+      <div class="eyebrow">The Living Journey / Explore</div>
+      <h1>Il mondo.<br>A modo tuo.</h1>
+    </div>
+  </div>
+
+  <form class="search" id="searchForm">
+
+    <input
+      id="city"
+      type="search"
+      placeholder="Dove vuoi svegliarti?"
+      aria-label="Destinazione">
+
+    <div class="filters">
+
+      <select id="kind" aria-label="Tipologia">
+        <option value="">Ogni alloggio</option>
+        <option value="bb">B&B</option>
+        <option value="appartamento">Appartamento</option>
+        <option value="casa vacanza">Casa vacanza</option>
+        <option value="villa">Villa</option>
+        <option value="hotel">Hotel</option>
+      </select>
+
+      <select id="budget" aria-label="Budget per notte">
+        <option value="">Ogni budget</option>
+        <option value="50">Fino a 50 €</option>
+        <option value="100">Fino a 100 €</option>
+        <option value="150">Fino a 150 €</option>
+        <option value="250">Fino a 250 €</option>
+        <option value="500">Fino a 500 €</option>
+      </select>
+
+    </div>
+
+    <button type="submit">
+      Esplora gli alloggi ↗
+    </button>
+
+  </form>
+
+  <div class="section-title">
+    <h2>Luoghi da vivere.</h2>
+    <span id="count" aria-live="polite">
+      Caricamento...
+    </span>
+  </div>
+
+  <div id="stays"></div>
+
+  <div class="ai-banner">
+    <div class="eyebrow">STAYGO Intelligence</div>
+    <h2>Non sai ancora dove andare?</h2>
+    <p>
+      Raccontaci come immagini il tuo prossimo
+      viaggio. Esplora nuove possibilità.
+    </p>
+    <a href="ai.html">Scopri STAYGO AI ↗</a>
+  </div>
+
+  <p class="notice">
+    STAYGO° — The Living Journey.
+    Piattaforma dimostrativa.
+    Nessuna prenotazione reale.
+  </p>
+
+</main>
+
+<nav class="bottom-nav" aria-label="Navigazione principale">
+
+  <a href="index.html">
+    <svg viewBox="0 0 24 24">
+      <path d="M3 10l9-7 9 7v11H3z"/>
+      <path d="M9 21v-8h6v8"/>
+    </svg>
+    Home
+  </a>
+
+  <a class="active" href="alloggi.html" aria-current="page">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M16 8l-3 5-5 3 3-5z"/>
+    </svg>
+    Esplora
+  </a>
+
+  <a href="ai.html">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>
+    </svg>
+    STAY AI
+  </a>
+
+  <a href="host.html">
+    <svg viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="5"/>
+      <path d="M12 7v10M7 12h10"/>
+    </svg>
+    Host
+  </a>
+
+  <a href="account.html">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21v-2a8 8 0 0116 0v2"/>
+    </svg>
+    Profilo
+  </a>
+
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+
+<script>
+document.getElementById('searchForm')
+.addEventListener('submit',function(e){
+  e.preventDefault();
+  filterStays();
+});
+
+document.getElementById('city')
+.addEventListener('input',filterStays);
+
+document.getElementById('kind')
+.addEventListener('change',filterStays);
+
+document.getElementById('budget')
+.addEventListener('change',filterStays);
+</script>
+
+</body>
+</html>
