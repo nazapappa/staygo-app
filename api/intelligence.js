@@ -121,7 +121,27 @@ module.exports = async function handler(req, res) {
     }
 
     const message = req.body?.message;
+const rawHistory = req.body?.history;
 
+const history = Array.isArray(rawHistory)
+  ? rawHistory.slice(-8)
+      .filter(item =>
+        item &&
+        ["user", "model"].includes(item.role) &&
+        typeof item.text === "string"
+      )
+      .map(item => ({
+        role: item.role,
+        parts: [{
+          text: item.text.slice(0, 1500)
+        }]
+      }))
+  : [];
+
+while (history.length &&
+       history[0].role !== "user") {
+  history.shift();
+}
     if (typeof message !== "string" ||
         !message.trim() ||
         message.length > 3000) {
@@ -161,10 +181,13 @@ module.exports = async function handler(req, res) {
           systemInstruction: {
             parts: [{ text: SYSTEM_PROMPT }]
           },
-          contents: [{
-            role: "user",
-            parts: [{ text: message.trim() }]
-          }],
+          contents: [
+  ...history,
+  {
+    role: "user",
+    parts: [{ text: message.trim() }]
+  }
+],
           generationConfig: {
             maxOutputTokens: MAX_OUTPUT,
             thinkingConfig: {
