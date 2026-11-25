@@ -85,7 +85,45 @@
   };
 
   const usedPhotos = new Set();
+const CACHE_PREFIX = "staygo_dynamic_v3_";
 
+function readCache(key) {
+  try {
+    const raw = localStorage.getItem(
+      CACHE_PREFIX + key
+    );
+
+    if (!raw) return null;
+
+    const cached = JSON.parse(raw);
+
+    if (cached.day !== day) {
+      localStorage.removeItem(
+        CACHE_PREFIX + key
+      );
+      return null;
+    }
+
+    return cached.result;
+
+  } catch (error) {
+    return null;
+  }
+}
+
+function writeCache(key, result) {
+  try {
+    localStorage.setItem(
+      CACHE_PREFIX + key,
+      JSON.stringify({
+        day: day,
+        result: result
+      })
+    );
+  } catch (error) {
+    console.warn("STAYGO Cache:", error);
+  }
+}
   async function loadPhoto(queries, offset) {
 
     const destination =
