@@ -182,9 +182,19 @@ module.exports = async function handler(req, res) {
 
   } catch (error) {
 
-    console.error("STAYGO_HOST_STATUS_ERROR", {
-      name: error.name
-    });
+  console.error("STAYGO_HOST_STATUS_ERROR", {
+  name: error.name,
+  code: [
+    "DATABASE_READ_ERROR",
+    "INVALID_ACCOUNT",
+    "STRIPE_ACCOUNT_ERROR",
+    "ACCOUNT_MISMATCH",
+    "DATABASE_UPDATE_ERROR",
+    "ACCOUNT_UPDATE_MISMATCH"
+  ].includes(error.message)
+    ? error.message
+    : "UNEXPECTED_ERROR"
+});
 
     return res.status(503).json({
       error: "Impossibile verificare lo stato Stripe"
