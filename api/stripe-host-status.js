@@ -16,12 +16,24 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const stripeKey = process.env.STRIPE_SECRET_KEY;
-  const dbKey = process.env.SUPABASE_SECRET_KEY;
+  const stripeKey =
+    process.env.STRIPE_SECRET_KEY?.trim();
+
+  const dbKey =
+    process.env.SUPABASE_SECRET_KEY?.trim();
 
   if (!stripeKey ||
       !stripeKey.startsWith("sk_test_") ||
       !dbKey) {
+
+    console.error("STAYGO_CONFIG_ERROR", {
+      stripeConfigured: Boolean(stripeKey),
+      stripeTestMode: Boolean(
+        stripeKey?.startsWith("sk_test_")
+      ),
+      databaseConfigured: Boolean(dbKey)
+    });
+
     return res.status(503).json({
       error: "STAYGO Pay non configurato"
     });
@@ -87,6 +99,11 @@ module.exports = async function handler(req, res) {
     );
 
     if (!accountResponse.ok) {
+
+      console.error("STAYGO_DATABASE_READ", {
+        status: accountResponse.status
+      });
+
       throw new Error("DATABASE_READ_ERROR");
     }
 
@@ -100,14 +117,19 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const accountId = accounts[0].stripe_account_id;
+    if (accounts.length !== 1) {
+      throw new Error("ACCOUNT_MISMATCH");
+    }
+
+    const accountId =
+      accounts[0].stripe_account_id;
 
     if (!/^acct_[a-zA-Z0-9]+$/.test(accountId)) {
       throw new Error("INVALID_ACCOUNT");
     }
 
     const stripeResponse = await fetch(
-      `https://api.stripe.com/v1/accounts/${accountId}`,
+      `https://api.stripe.com/v1/accounts/${encodeURIComponent(accountId)}`,
       {
         headers: {
           Authorization: `Bearer ${stripeKey}`
@@ -116,23 +138,47 @@ module.exports = async function handler(req, res) {
       }
     );
 
+    const account = await stripeResponse
+      .json()
+      .catch(() => null);
+
     if (!stripeResponse.ok) {
+
+      console.error("STAYGO_STRIPE_DIAGNOSTIC", {
+        httpStatus: stripeResponse.status,
+        stripeCode: account?.error?.code || null,
+        stripeType: account?.error?.type || null,
+        requestId:
+          stripeResponse.headers.get("request-id")
+      });
+
       throw new Error("STRIPE_ACCOUNT_ERROR");
     }
 
-    const account = await stripeResponse.json();
-
-    if (account.id !== accountId ||
+    if (!account ||
+        account.id !== accountId ||
         account.object !== "account" ||
         account.controller?.is_controller !== true) {
+
+      console.error("STAYGO_ACCOUNT_DIAGNOSTIC", {
+        idMatches: account?.id === accountId,
+        objectMatches: account?.object === "account",
+        isController:
+          account?.controller?.is_controller ?? null
+      });
+
       throw new Error("ACCOUNT_MISMATCH");
     }
 
     const status = {
-      charges_enabled: account.charges_enabled === true,
-      payouts_enabled: account.payouts_enabled === true,
-      details_submitted: account.details_submitted === true,
-      aggiornato_il: new Date().toISOString()
+      charges_enabled:
+        account.charges_enabled === true,
+      payouts_enabled:
+        account.payouts_enabled === true,
+      details_submitted:
+        account.details_submitted === true,
+      aggiornato_il:
+        new Date().toISOString()
     };
 
     const updateResponse = await fetch(
@@ -149,6 +195,11 @@ module.exports = async function handler(req, res) {
     );
 
     if (!updateResponse.ok) {
+
+      console.error("STAYGO_DATABASE_UPDATE", {
+        status: updateResponse.status
+      });
+
       throw new Error("DATABASE_UPDATE_ERROR");
     }
 
@@ -164,6 +215,19 @@ module.exports = async function handler(req, res) {
     const cardPaymentsEnabled =
       account.capabilities?.card_payments === "active";
 
+    const ready =
+      status.charges_enabled &&
+      status.payouts_enabled &&
+      status.details_submitted &&
+      transfersEnabled &&
+      cardPaymentsEnabled;
+
+    console.info("STAYGO_HOST_STATUS_SUCCESS", {
+      ready,
+      transfersEnabled,
+      cardPaymentsEnabled
+    });
+
     return res.status(200).json({
       connected: true,
       mode: "sandbox",
@@ -172,29 +236,24 @@ module.exports = async function handler(req, res) {
       details_submitted: status.details_submitted,
       transfers_enabled: transfersEnabled,
       card_payments_enabled: cardPaymentsEnabled,
-      ready:
-        status.charges_enabled &&
-        status.payouts_enabled &&
-        status.details_submitted &&
-        transfersEnabled &&
-        cardPaymentsEnabled
+      ready
     });
 
   } catch (error) {
 
-  console.error("STAYGO_HOST_STATUS_ERROR", {
-  name: error.name,
-  code: [
-    "DATABASE_READ_ERROR",
-    "INVALID_ACCOUNT",
-    "STRIPE_ACCOUNT_ERROR",
-    "ACCOUNT_MISMATCH",
-    "DATABASE_UPDATE_ERROR",
-    "ACCOUNT_UPDATE_MISMATCH"
-  ].includes(error.message)
-    ? error.message
-    : "UNEXPECTED_ERROR"
-});
+    console.error("STAYGO_HOST_STATUS_ERROR", {
+      name: error.name,
+      code: [
+        "DATABASE_READ_ERROR",
+        "INVALID_ACCOUNT",
+        "STRIPE_ACCOUNT_ERROR",
+        "ACCOUNT_MISMATCH",
+        "DATABASE_UPDATE_ERROR",
+        "ACCOUNT_UPDATE_MISMATCH"
+      ].includes(error.message)
+        ? error.message
+        : "UNEXPECTED_ERROR"
+    });
 
     return res.status(503).json({
       error: "Impossibile verificare lo stato Stripe"
