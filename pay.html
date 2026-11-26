@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>STAYGO° Pay</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+:root {
+  --pay-bg: #14151A;
+  --pay-card: #202127;
+  --pay-moon: #E6D9FF;
+  --pay-text: #F4F1EA;
+  --pay-muted: #A6A8B2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--pay-bg);
+  color: var(--pay-text);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.pay-wrap {
+  width: 90%;
+  max-width: 850px;
+  margin: auto;
+  padding-bottom: 60px;
+}
+
+.pay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 0;
+}
+
+.pay-logo {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  color: var(--pay-text);
+  text-decoration: none;
+}
+
+.pay-back {
+  color: var(--pay-muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.pay-hero {
+  padding: 40px 0 28px;
+}
+
+.pay-eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--pay-moon);
+  text-transform: uppercase;
+}
+
+.pay-hero h1 {
+  font-size: clamp(46px, 9vw, 80px);
+  letter-spacing: -4px;
+  line-height: 1;
+  margin: 18px 0;
+}
+
+.pay-hero p {
+  color: var(--pay-muted);
+  line-height: 1.6;
+  max-width: 480px;
+}
+
+.pay-wallet {
+  background: linear-gradient(
+    135deg,
+    #E6D9FF,
+    #B7A4DC
+  );
+  color: #14151A;
+  padding: 30px;
+  border-radius: 30px;
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.wallet-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wallet-brand {
+  font-weight: 800;
+  font-size: 23px;
+  letter-spacing: -1px;
+}
+
+.wallet-label {
+  font-size: 12px;
+  opacity: .7;
+}
+
+.wallet-status {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-top: 8px;
+}
+
+.wallet-bottom {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.pay-panel {
+  margin-top: 20px;
+  background: var(--pay-card);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 26px;
+  padding: 25px;
+}
+
+.pay-panel h2 {
+  margin-top: 0;
+  font-size: 21px;
+  letter-spacing: -.6px;
+}
+
+.pay-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  font-size: 14px;
+}
+
+.pay-row:last-child {
+  border-bottom: none;
+}
+
+.status {
+  color: var(--pay-muted);
+  font-size: 12px;
+  text-align: right;
+}
+
+.status.ok {
+  color: #8DE2B4;
+}
+
+.status.warning {
+  color: #EAC68C;
+}
+
+.pay-button {
+  width: 100%;
+  border: none;
+  border-radius: 50px;
+  background: var(--pay-moon);
+  color: #14151A;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 18px;
+  cursor: pointer;
+  margin-top: 22px;
+}
+
+.pay-button:disabled {
+  opacity: .5;
+  cursor: default;
+}
+
+.pay-message {
+  font-size: 13px;
+  color: var(--pay-muted);
+  line-height: 1.6;
+  margin-top: 15px;
+}
+
+.pay-future {
+  color: var(--pay-muted);
+  font-size: 12px;
+}
+
+.pay-footer {
+  margin-top: 30px;
+  text-align: center;
+  color: var(--pay-muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+</style>
+</head>
+
+<body>
+
+<main class="pay-wrap">
+
+  <header class="pay-header">
+    <a class="pay-logo" href="index.html">staygo°</a>
+    <a class="pay-back" href="annunci.html">← Host Collection</a>
+  </header>
+
+  <section class="pay-hero">
+    <div class="pay-eyebrow">Host financial experience</div>
+
+    <h1>Staygo Pay.</h1>
+
+    <p>
+      I tuoi incassi. Il tuo controllo.
+      Una nuova esperienza per gestire
+      i pagamenti dei tuoi soggiorni.
+    </p>
+  </section>
+
+  <section class="pay-wallet">
+
+    <div class="wallet-top">
+      <div class="wallet-brand">staygo° pay</div>
+      <div>◇</div>
+    </div>
+
+    <div>
+      <div class="wallet-label">Stato del tuo account</div>
+      <div class="wallet-status" id="walletStatus">
+        Da verificare
+      </div>
+    </div>
+
+    <div class="wallet-bottom">
+      Host account · Sandbox
+    </div>
+
+  </section>
+
+  <section class="pay-panel">
+
+    <h2>Account finanziario</h2>
+
+    <div class="pay-row">
+      <span>Connessione Stripe</span>
+      <span class="status" id="connection">—</span>
+    </div>
+
+    <div class="pay-row">
+      <span>Informazioni Host</span>
+      <span class="status" id="details">—</span>
+    </div>
+
+    <div class="pay-row">
+      <span>Pagamenti</span>
+      <span class="status" id="charges">—</span>
+    </div>
+
+    <div class="pay-row">
+      <span>Pagamenti con carta</span>
+      <span class="status" id="cards">—</span>
+    </div>
+
+    <div class="pay-row">
+      <span>Trasferimenti</span>
+      <span class="status" id="transfers">—</span>
+    </div>
+
+    <div class="pay-row">
+      <span>Bonifici bancari</span>
+      <span class="status" id="payouts">—</span>
+    </div>
+
+    <button
+      class="pay-button"
+      id="refreshButton"
+      onclick="checkStatus()">
+      Verifica account
+    </button>
+
+    <div class="pay-message"
+         id="payMessage"
+         role="status"
+         aria-live="polite"></div>
+
+  </section>
+
+  <section class="pay-panel">
+
+    <h2>Financial overview</h2>
+
+    <div class="pay-row">
+      <span>Incassi</span>
+      <span class="pay-future">In sviluppo</span>
+    </div>
+
+    <div class="pay-row">
+      <span>Prossimi bonifici</span>
+      <span class="pay-future">In sviluppo</span>
+    </div>
+
+    <div class="pay-row">
+      <span>Storico transazioni</span>
+      <span class="pay-future">In sviluppo</span>
+    </div>
+
+    <div class="pay-row">
+      <span>Documenti finanziari</span>
+      <span class="pay-future">In sviluppo</span>
+    </div>
+
+  </section>
+
+  <footer class="pay-footer">
+    STAYGO° PAY · Powered by Stripe<br>
+    Ambiente di test. Nessun pagamento reale.
+  </footer>
+
+</main>
+
+<script>
+
+const db = supabase.createClient(
+  "https://zjfcnojzstlwzxeldaqn.supabase.co",
+  "sb_publishable_7PH45XJmmxUiZfobZQS6SA_1rtHRZ72"
+);
+
+const get = id => document.getElementById(id);
+
+let checking = false;
+
+function setStatus(id, value) {
+  const element = get(id);
+
+  element.textContent =
+    value === true ? "Attivo" :
+    value === false ? "Non attivo" : "—";
+
+  element.className =
+    value === true ? "status ok" :
+    value === false ? "status warning" : "status";
+}
+
+function resetStatus() {
+  [
+    "connection",
+    "details",
+    "charges",
+    "cards",
+    "transfers",
+    "payouts"
+  ].forEach(id => setStatus(id, null));
+}
+
+async function checkStatus() {
+
+  if (checking) return;
+
+  checking = true;
+
+  const button = get("refreshButton");
+  const message = get("payMessage");
+  const wallet = get("walletStatus");
+
+  button.disabled = true;
+  button.textContent = "Verifica in corso…";
+
+  resetStatus();
+
+  wallet.textContent = "Verifica in corso";
+  message.textContent = "";
+
+  try {
+
+    const { data, error } =
+      await db.auth.getSession();
+
+    if (error || !data.session) {
+      wallet.textContent = "Accedi";
+      message.textContent =
+        "Accedi al tuo account Host per continuare.";
+      return;
+    }
+
+    const response = await fetch(
+      "/api/stripe-host-status",
+      {
+        method: "POST",
+        headers: {
+          Authorization:
+            "Bearer " + data.session.access_token
+        },
+        signal: AbortSignal.timeout(45000)
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error || "Verifica non riuscita."
+      );
+    }
+
+    if (result.connected === false) {
+
+      setStatus("connection", false);
+
+      wallet.textContent = "Non collegato";
+
+      message.textContent =
+        "Nessun account Stripe associato al tuo profilo.";
+
+      return;
+    }
+
+    setStatus("connection", result.connected);
+    setStatus("details", result.details_submitted);
+    setStatus("charges", result.charges_enabled);
+    setStatus("cards", result.card_payments_enabled);
+    setStatus("transfers", result.transfers_enabled);
+    setStatus("payouts", result.payouts_enabled);
+
+    if (result.ready === true) {
+
+      wallet.textContent = "Account attivo";
+
+      message.textContent =
+        "Account Stripe verificato e abilitato in modalità Sandbox.";
+
+    } else {
+
+      wallet.textContent = "Da completare";
+
+      message.textContent =
+        "Alcune autorizzazioni Stripe non sono ancora attive.";
+
+    }
+
+  } catch (error) {
+
+    resetStatus();
+
+    wallet.textContent = "Non disponibile";
+
+    message.textContent =
+      "Impossibile verificare l'account. Riprova tra poco.";
+
+  } finally {
+
+    checking = false;
+    button.disabled = false;
+    button.textContent = "Aggiorna stato";
+
+  }
+
+}
+
+db.auth.onAuthStateChange((event) => {
+
+  if (event === "SIGNED_OUT") {
+
+    resetStatus();
+
+    get("walletStatus").textContent = "Accedi";
+
+    get("payMessage").textContent =
+      "Sessione terminata. Accedi nuovamente.";
+
+  }
+
+});
+
+checkStatus();
+
+</script>
+
+</body>
+</html>
