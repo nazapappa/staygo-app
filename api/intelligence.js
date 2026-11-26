@@ -266,21 +266,32 @@ module.exports = async function handler(req, res) {
         model: MODEL
       });
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-        {
-          method: "POST",
 
-          headers: {
-            "x-goog-api-key": process.env.GEMINI_API_KEY,
-            "Content-Type": "application/json"
-          },
+const geminiStart = Date.now();
 
-          body: JSON.stringify(payload),
+console.info("GEMINI_REQUEST_START", {
+  model: MODEL,
+  timeout: AI_TIMEOUT
+});
 
-          signal: AbortSignal.timeout(AI_TIMEOUT)
-        }
-      );
+const response = await fetch(
+  `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+  {
+    method: "POST",
+    headers: {
+      "x-goog-api-key": process.env.GEMINI_API_KEY,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(AI_TIMEOUT)
+  }
+);
+
+console.info("GEMINI_RESPONSE_RECEIVED", {
+  status: response.status,
+  durationMs: Date.now() - geminiStart
+});
+
 
       if (!response.ok) {
 
