@@ -209,27 +209,20 @@ module.exports = async function handler(req, res) {
       req.body?.history
     );
 
-    const payload = {
-      systemInstruction: {
-        parts: [{ text: SYSTEM_PROMPT }]
-      },
-
-      contents: [
-        ...history,
+    
+const payload = {
+  contents: [
+    {
+      role: "user",
+      parts: [
         {
-          role: "user",
-          parts: [{ text: message.trim() }]
+          text: "Rispondi soltanto con la parola OK."
         }
-      ],
+      ]
+    }
+  ]
+};
 
-      generationConfig: {
-        maxOutputTokens: MAX_OUTPUT,
-
-        thinkingConfig: {
-          thinkingLevel: "LOW"
-        }
-      }
-    };
 
     for (
       let attempt = 1;
@@ -266,7 +259,7 @@ module.exports = async function handler(req, res) {
         model: MODEL
       });
 
-
+      
 const geminiStart = Date.now();
 
 console.info("GEMINI_REQUEST_START", {
