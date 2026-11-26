@@ -226,7 +226,7 @@ module.exports = async function handler(req, res) {
         maxOutputTokens: MAX_OUTPUT,
 
         thinkingConfig: {
-          thinkingLevel: "MEDIUM"
+          thinkingLevel: "LOW"
         }
       }
     };
